@@ -14,7 +14,7 @@
       <div class="logo me-auto">
        
          <router-link :to="{name:'dashboard'}">
-           <h1 class="text-white"> <img :src="'../images/icon/iconlidts-1.png'"   class="img-fluid" alt="Lindt's Food" />
+           <h1 class="text-white title-design"> <img :src="'../images/icon/iconlidts-1.png'"   class="img-fluid" alt="Lindt's Food" />
             Lindt's Food</h1>
          </router-link>
        
@@ -26,8 +26,8 @@
           <li><a class="nav-link scrollto" href="#about">About</a></li>
           <li><router-link class="nav-link scrollto" :to="{name:'menu'}">Menu</router-link></li>
          
-          <!-- <li><a class="nav-link scrollto" href="#specials">Specials</a></li>
-          <li><a class="nav-link scrollto" href="#events">Events</a></li>
+          <li><a class="nav-link scrollto" href="#specials">Reservations</a></li>
+          <!-- <li><a class="nav-link scrollto" href="#events">Events</a></li>
           <li><a class="nav-link scrollto" href="#chefs">Chefs</a></li>
           <li><a class="nav-link scrollto" href="#gallery">Gallery</a></li>
           <li class="dropdown"><a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
@@ -53,17 +53,197 @@
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
 
-      <a href="#book-a-table" class="book-a-table-btn scrollto">Tray <span class="badge badge-light text-warning">{{lenst}}</span></a>
+      <a href="#" @click="showTrayModal()" class="book-a-table-btn scrollto">Tray <span class="badge badge-light text-warning">{{lenst}}</span></a>
     
     </div>
   </header><!-- End Header -->
   <flashmessage :message="message" :status="status"></flashmessage>
   <router-view @show="flashMessage" @trayscount="countTrays"></router-view>
+     <div class="modal fade tray" ref="tray" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                  <div class="container h-100">
+                    <div class="row d-flex justify-content-center align-items-center h-100">
+                      <div class="col-12">
+                        <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+                          <div class="card-body p-0">
+                            <div class="row g-0">
+                              <div class="col-lg-8">
+                                <div class="p-5">
+                                  <div class="d-flex justify-content-between align-items-center mb-5">
+                                    <h3 class="fw-bold mb-0 text-black title-design">Menu Tray</h3>
+                                    <h6 class="mb-0 text-muted">{{ this.lenst }} items</h6>
+                                  </div>
+                                  <hr class="my-4">
+                                  <div v-for="(list, index) in trays" :key="index">
+                                    <div class="row mb-4 d-flex justify-content-between align-items-center">
+                                        <div class="col-md-2 col-lg-2 col-xl-2 menu-img">
+                                           <img :src="list.image == null ? '../images/icon/icon.png' :'../storage/products/'+list.image" class="m-img img-sm" alt="">
+                                        </div>
+                                        <div class="col-md-3 col-lg-3 col-xl-3">
+                                          <h6 class="text-muted">{{ list.name }}</h6>
+                                          <h6 class="text-black mb-0">{{ list.description }}</h6>
+                                        </div>
+                                        <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                          <button class="btn btn-link px-2 btn-qty"
+                                           @click="minusQty(list)" >
+                                            <i class="fas fa-minus"></i>
+                                          </button>
+
+                                          <input id="form1" readonly min="0" name="quantity" :value="list.quantity" type="number"
+                                            class="form-control form-control-sm form-wt" />
+
+                                          <button class="btn btn-link px-2 btn-qty"
+                                             @click="addQty(list)" >
+                                            <i class="fas fa-plus"></i>
+                                          </button>
+                                        </div>
+                                        <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                          <h6 class="mb-0">&#8369; {{formatAmount(list.price)}}</h6>
+                                        </div>
+                                        <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                          <a href="#!" @click="removeFromTray(list.product_id)" class="text-muted btn-qty"><i class="fas fa-times"></i></a>
+                                        </div>
+                                    </div>
+                                    <hr class="my-4">
+                                  </div>
+                                  <div class="pt-5">
+                                    <h6 class="mb-0"><a href="#" @click="backToMenu" class="text-body"><i
+                                          class="fas fa-long-arrow-alt-left me-2"></i>Back to menu</a></h6>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-lg-4 bg-grey">
+                                <div class="p-5">
+                                  <h5 class="fw-bold mb-5 mt-2 pt-1">Summary</h5>
+                                  <hr class="my-4">
+
+                                  <div class="d-flex justify-content-between mb-4">
+                                    <h5 class="text-uppercase">items {{ this.lenst }}</h5>
+                                    <h5>&#8369; {{ formatAmount(totalAmount(trays)) }}</h5>
+                                  </div>
+
+                                  <hr class="my-4">
+                                  <h5 class="text-uppercase mb-3">Payment Mode</h5>
+
+                                  <div class="mb-5">
+                                    <div class="form-outline">
+                                    <select v-model="order.pay_method" class="form-control" @change="paymethod()">
+                                        <option value="1">Delivery</option>
+                                        <option value="2">Walk in</option>
+                                      </select>
+                                      <!-- <label class="form-label" for="form3Examplea2">Enter your code</label> -->
+                                    </div>
+                                  </div>
+                                  <hr class="my-4" v-if="showshipad">
+
+                                  <h5 class="text-uppercase mb-3" v-if="showshipad">Shipping</h5>
+
+                                  <div class="mb-4 pb-2" v-if="showshipad">
+                                    <select class="form-control">
+                                      <option value="1">Standard-Delivery- €5.00</option>
+                                      <option value="2">Two</option>
+                                      <option value="3">Three</option>
+                                      <option value="4">Four</option>
+                                    </select>
+                                  </div>
+                                  
+                                  <div class="d-flex justify-content-between mb-5" v-if="showshipad">
+                                    <div class="text-uppercase">
+                                        <strong>Lavwin Campoll</strong>
+                                        <p>San Mateo Aleosan Cotabato</p>
+                                    </div>
+                                    <div>
+                                      <div class="btn-group">
+                                        <a class="btn btn-warning btn-sm" href="#" @click="showShippingList()"><i class="fa fa-list"></i></a>
+                                        <a class="btn btn-warning btn-sm" href="#" @click="showShippingAddress()"><i class="fa fa-plus"></i></a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <p v-if="!showshipad"> Please bring order slip on the Store!</p>
+                                  <hr class="my-4">
+                                  <div class="d-flex justify-content-between mb-5">
+                                    <h5 class="text-uppercase">Total price</h5>
+                                    <h5>&#8369; 137.00</h5>
+                                  </div>
+
+                                  <button type="button" class="btn book-a-table-btn btn-block btn-lg"
+                                    data-mdb-ripple-color="dark">Place Order</button>
+
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade shipping-address" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header bg-secondary">
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="text-warning">Shipping Address</h4>
+                            <div class="form-group">
+                                <label>Full name</label>
+                                <input class="au-input au-input--full"  type="text" v-model="post.full_name" placeholder="Full name">
+                                <span class="errors-material" v-if="errors.full_name">{{errors.full_name[0]}}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input class="au-input au-input--full"  type="text" v-model="post.address" placeholder="Address">
+                                <span class="errors-material" v-if="errors.full_name">{{errors.address[0]}}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input class="au-input au-input--full"  type="text" v-model="post.mobile_number" placeholder="Mobile number">
+                                <span class="errors-material" v-if="errors.mobile_number">{{errors.mobile_number[0]}}</span>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer text-center bg-secondary">
+                    <button type="button" @click="browseImg()" class="book-a-table-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade shipping-list" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header bg-secondary">
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="text-warning">List of Shipping Address</h4>
+                           
+                           
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer text-center bg-secondary">
+                    <button type="button" @click="browseImg()" class="book-a-table-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
  
 <footer id="footer">
     <div class="container">
-      <h3>{{title}}</h3>
+      <h3 class="title-design">{{title}}</h3>
       <p>Et aut eum quis fuga eos sunt ipsa nihil. Labore corporis magni eligendi fuga maxime saepe commodi placeat.</p>
       <div class="social-links">
         <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
@@ -76,16 +256,12 @@
         &copy; Copyright <strong><span>{{title}}</span></strong>. All Rights Reserved
       </div>
       <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/delicious-free-restaurant-bootstrap-theme/ -->
         Designed by <a href="#">winsdev's</a>
       </div>
     </div>
   </footer><!-- End Footer -->
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center" @click="showTrayModal"><i class="bi bi-arrow-up-short"></i></a>
 </div>
     
 </template>
@@ -101,164 +277,171 @@ export default {
       title:'',
       message:'',
       status:0,
-      lenst:0
+      lenst:0,
+      trays:[],
+      post:{},
+      errors:[],
+      order:{},
+      showshipad: true,
     }
   },
     mounted() {
-        let user = window.Laravel.user;
-        this.title = window.Title.app_name;
-        this.trayDefault();
+      let user = window.Laravel.user;
+      this.title = window.Title.app_name;
+      this.trayDefault();
+      this.userTray();
+      this.order.pay_method = 1;
 
-         const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
-    } else {
-      return document.querySelector(el)
-    }
-  }
-
-  /**
-   * Easy event listener function
-   */
-  const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all)
-    if (selectEl) {
-      if (all) {
-        selectEl.forEach(e => e.addEventListener(type, listener))
-      } else {
-        selectEl.addEventListener(type, listener)
-      }
-    }
-  }
-
-  /**
-   * Easy on scroll event listener 
-   */
-  const onscroll = (el, listener) => {
-    el.addEventListener('scroll', listener)
-  }
-
-  /**
-   * Navbar links active state on scroll
-   */
-  let navbarlinks = select('#navbar .scrollto', true)
-  const navbarlinksActive = () => {
-    let position = window.scrollY + 200
-    navbarlinks.forEach(navbarlink => {
-      if (!navbarlink.hash) return
-      let section = select(navbarlink.hash)
-      if (!section) return
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        navbarlink.classList.add('active')
-      } else {
-        navbarlink.classList.remove('active')
-      }
-    })
-  }
-  window.addEventListener('load', navbarlinksActive)
-  onscroll(document, navbarlinksActive)
-
-  /**
-   * Scrolls to an element with header offset
-   */
-  const scrollto = (el) => {
-    let header = select('#header')
-    let offset = header.offsetHeight
-
-    let elementPos = select(el).offsetTop
-    window.scrollTo({
-      top: elementPos - offset,
-      behavior: 'smooth'
-    })
-  }
-
-  /**
-   * Toggle .header-scrolled class to #header when page is scrolled
-   */
-  let selectHeader = select('#header')
-  let selectTopbar = select('#topbar')
-  if (selectHeader) {
-    const headerScrolled = () => {
-      if (window.scrollY > 100) {
-        selectHeader.classList.add('header-scrolled')
-        if (selectTopbar) {
-          selectTopbar.classList.add('topbar-scrolled')
-        }
-      } else {
-        selectHeader.classList.remove('header-scrolled')
-        if (selectTopbar) {
-          selectTopbar.classList.remove('topbar-scrolled')
+      const select = (el, all = false) => {
+        el = el.trim()
+        if (all) {
+          return [...document.querySelectorAll(el)]
+        } else {
+          return document.querySelector(el)
         }
       }
-    }
-    window.addEventListener('load', headerScrolled)
-    onscroll(document, headerScrolled)
-  }
 
-  /**
-   * Back to top button
-   */
-  let backtotop = select('.back-to-top')
-  if (backtotop) {
-    const toggleBacktotop = () => {
-      if (window.scrollY > 100) {
-        backtotop.classList.add('active')
-      } else {
-        backtotop.classList.remove('active')
+      /**
+       * Easy event listener function
+       */
+      const on = (type, el, listener, all = false) => {
+        let selectEl = select(el, all)
+        if (selectEl) {
+          if (all) {
+            selectEl.forEach(e => e.addEventListener(type, listener))
+          } else {
+            selectEl.addEventListener(type, listener)
+          }
+        }
       }
-    }
-    window.addEventListener('load', toggleBacktotop)
-    onscroll(document, toggleBacktotop)
-  }
 
-  /**
-   * Mobile nav toggle
-   */
-  on('click', '.mobile-nav-toggle', function(e) {
-    select('#navbar').classList.toggle('navbar-mobile')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
-  })
-
-  /**
-   * Mobile nav dropdowns activate
-   */
-  on('click', '.navbar .dropdown > a', function(e) {
-    if (select('#navbar').classList.contains('navbar-mobile')) {
-      e.preventDefault()
-      this.nextElementSibling.classList.toggle('dropdown-active')
-    }
-  }, true)
-
-  /**
-   * Scrool with ofset on links with a class name .scrollto
-   */
-  on('click', '.scrollto', function(e) {
-    if (select(this.hash)) {
-      e.preventDefault()
-
-      let navbar = select('#navbar')
-      if (navbar.classList.contains('navbar-mobile')) {
-        navbar.classList.remove('navbar-mobile')
-        let navbarToggle = select('.mobile-nav-toggle')
-        navbarToggle.classList.toggle('bi-list')
-        navbarToggle.classList.toggle('bi-x')
+      /**
+       * Easy on scroll event listener 
+       */
+      const onscroll = (el, listener) => {
+        el.addEventListener('scroll', listener)
       }
-      scrollto(this.hash)
-    }
-  }, true)
 
-  /**
-   * Scroll with ofset on page load with hash links in the url
-   */
-  window.addEventListener('load', () => {
-    if (window.location.hash) {
-      if (select(window.location.hash)) {
-        scrollto(window.location.hash)
+      /**
+       * Navbar links active state on scroll
+       */
+      let navbarlinks = select('#navbar .scrollto', true)
+      const navbarlinksActive = () => {
+        let position = window.scrollY + 200
+        navbarlinks.forEach(navbarlink => {
+          if (!navbarlink.hash) return
+          let section = select(navbarlink.hash)
+          if (!section) return
+          if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
+            navbarlink.classList.add('active')
+          } else {
+            navbarlink.classList.remove('active')
+          }
+        })
       }
-    }
-  });
+      window.addEventListener('load', navbarlinksActive)
+      onscroll(document, navbarlinksActive)
+
+      /**
+       * Scrolls to an element with header offset
+       */
+      const scrollto = (el) => {
+        let header = select('#header')
+        let offset = header.offsetHeight
+
+        let elementPos = select(el).offsetTop
+        window.scrollTo({
+          top: elementPos - offset,
+          behavior: 'smooth'
+        })
+      }
+
+      /**
+       * Toggle .header-scrolled class to #header when page is scrolled
+       */
+      let selectHeader = select('#header')
+      let selectTopbar = select('#topbar')
+      if (selectHeader) {
+        const headerScrolled = () => {
+          if (window.scrollY > 100) {
+            selectHeader.classList.add('header-scrolled')
+            if (selectTopbar) {
+              selectTopbar.classList.add('topbar-scrolled')
+            }
+          } else {
+            selectHeader.classList.remove('header-scrolled')
+            if (selectTopbar) {
+              selectTopbar.classList.remove('topbar-scrolled')
+            }
+          }
+        }
+        window.addEventListener('load', headerScrolled)
+        onscroll(document, headerScrolled)
+      }
+
+      /**
+       * Back to top button
+       */
+      let backtotop = select('.back-to-top')
+      if (backtotop) {
+        const toggleBacktotop = () => {
+          if (window.scrollY > 100) {
+            backtotop.classList.add('active')
+          } else {
+            backtotop.classList.remove('active')
+          }
+        }
+        window.addEventListener('load', toggleBacktotop)
+        onscroll(document, toggleBacktotop)
+      }
+
+      /**
+       * Mobile nav toggle
+       */
+      on('click', '.mobile-nav-toggle', function(e) {
+        select('#navbar').classList.toggle('navbar-mobile')
+        this.classList.toggle('bi-list')
+        this.classList.toggle('bi-x')
+      })
+
+      /**
+       * Mobile nav dropdowns activate
+       */
+      on('click', '.navbar .dropdown > a', function(e) {
+        if (select('#navbar').classList.contains('navbar-mobile')) {
+          e.preventDefault()
+          this.nextElementSibling.classList.toggle('dropdown-active')
+        }
+      }, true)
+
+      /**
+       * Scrool with ofset on links with a class name .scrollto
+       */
+      on('click', '.scrollto', function(e) {
+        if (select(this.hash)) {
+          e.preventDefault()
+
+          let navbar = select('#navbar')
+          if (navbar.classList.contains('navbar-mobile')) {
+            navbar.classList.remove('navbar-mobile')
+            let navbarToggle = select('.mobile-nav-toggle')
+            navbarToggle.classList.toggle('bi-list')
+            navbarToggle.classList.toggle('bi-x')
+          }
+          scrollto(this.hash)
+        }
+      }, true)
+
+      /**
+       * Scroll with ofset on page load with hash links in the url
+       */
+      window.addEventListener('load', () => {
+        if (window.location.hash) {
+          if (select(window.location.hash)) {
+            scrollto(window.location.hash)
+          }
+        }
+      });
 
     },
 
@@ -307,6 +490,92 @@ export default {
                 });
             });
         },
+        showTrayModal(){
+          this.userTray();
+          $('.tray').modal('show');
+        },
+        userTray(){
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.$axios.get('api/user-list-tray').then(res=>{
+                    let data = JSON.parse(res.data.json_data);
+                    this.trays  = data;
+                });
+            });
+        },
+        minusQty(menu){
+            let result = (menu.quantity == 1) ? 1 : menu.quantity - 1;
+            let data = {'quantity': result};
+            let item = this.trays.find(e =>e.product_id === menu.product_id);
+            let idx = this.trays.indexOf(item);
+            this.trays[idx].quantity = result;      
+            this.convertJsonString(this.trays);
+          
+        },
+        addQty(menu){
+            let result = 0;
+            result = menu.quantity + 1;
+            let data = {'quantity': result};
+            let item = this.trays.find(e =>e.product_id === menu.product_id);
+            let idx = this.trays.indexOf(item);
+            this.trays[idx].quantity = result;      
+            this.convertJsonString(this.trays);
+        },
+        convertJsonString(data){
+            let cvs = ({'json_data':JSON.stringify(data)})
+            this.saveToTray(cvs)
+            this.countTrays(data);
+        },
+        saveToTray(data){
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.btndis = true;
+                this.$axios.post('api/user-tray', data).then(res=>{
+                }).catch(err=>{
+
+                });
+            });
+        },
+        totalAmount(data){
+            let subtotal_ = 0;
+            let subtotal = 0;
+            data.forEach((val, index)=>{
+                subtotal_ = val.quantity * val.price;
+                subtotal = subtotal + subtotal_;
+            });
+            return subtotal;
+        },
+        formatAmount(num){
+            let num_ = Number(num);
+            let val = (num_/1).toFixed(2).replace(',', '.')
+            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        },
+        removeFromTray(id){
+            this.trays.forEach((val, index)=>{
+                if(id == val.product_id){
+                    this.trays.splice(index, 1);
+                }
+            });
+            this.countTrays(this.trays);
+            this.convertJsonString(this.trays);
+        },
+        backToMenu(){
+          $('.tray').modal('hide');
+          this.$router.push({name:'menu'});
+        },
+        showShippingAddress(){
+          $('.shipping-address').modal('show');
+        },
+        showShippingList(){
+           $('.shipping-list').modal('show');
+        },
+        paymethod(){
+           let num = this.order.pay_method;
+
+           if(num == 1){
+              this.showshipad = true;
+           }else{
+             this.showshipad = false;
+           }
+        }
     },
 }
 </script>

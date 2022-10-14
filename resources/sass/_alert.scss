@@ -53,6 +53,12 @@
         margin: 0 auto;
     }
 }
+
+.img-sm{
+    width: 88px !important;
+    height: 88px !important; 
+    border: 2px solid rgba(37, 37, 37, 0.15) !important;
+}
 .menu-img-lg{
     justify-content: space-between;
     display: flex;
@@ -66,4 +72,11 @@
 }
 .m-top{
     margin-top: 6rem!important;
+}
+.btn-sm-table{
+    padding: 5px 10px !important;
+}
+
+.product-shadow{
+    box-shadow: 0 0.15rem 0.2rem 0 rgb(0 0 0 / 10%) !important;
 }

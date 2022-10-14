@@ -37,7 +37,7 @@
                                         <a href="#">Forgotten Password?</a>
                                     </label>
                                 </div>
-                                <button  type="button" class="btn btn-secondary btn-block btn-block"  @click="signin()" :disabled="btn_dis">{{ btn_txt}}</button>
+                                <button  type="button" class="btn btn-warning btn-block text-white"  @click="signin()" :disabled="btn_dis">{{ btn_txt}}</button>
                                 <!-- <div class="social-login-content">
                                     <div class="social-button">
                                         <button class="au-btn au-btn--block au-btn--blue m-b-20">sign in with facebook</button>

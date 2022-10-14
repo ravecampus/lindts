@@ -70,7 +70,7 @@
                                         <input type="checkbox" name="aggree">Agree the terms and policy
                                     </label>
                                 </div>
-                                <button @click="signup()" class="btn btn-warning btn-block" :disabled="btn_dis" type="button">{{ btn_txt }}</button>
+                                <button @click="signup()" class="btn btn-warning btn-block text-white" :disabled="btn_dis" type="button">{{ btn_txt }}</button>
                                
                             </form>
                             <div class="register-link">

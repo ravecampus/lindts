@@ -5,7 +5,7 @@
       <div class="container">
 
         <div class="section-title">
-          <h2>Check our tasty <span>Menu</span></h2>
+          <h2 class="title-design">Check our tasty <span>Menu</span></h2>
         </div>
         
         <div class="row">
@@ -24,13 +24,13 @@
         <div class="row menu-container d-flex justify-content-center mt-5">
 
            <div v-for="(lst,idx) in products" :key="idx" class="col-lg-4 menu-item" v-bind:class="'L'+lst.food_category_id">
-              <div class="card">
+              <div class="card product-shadow">
                 <div class="card-body">
                   <div class="menu-img">
                     <img :src="lst.image == null ? '../images/icon/icon.png' :'../storage/products/'+lst.image" class="m-img" alt="">
                     <!-- <span></span> -->
                     <div>
-                        <a @click="orderMenu(lst)" href="#">Order</a>
+                        <a class="book-a-table-btn btn-sm-table" @click="orderMenu(lst)" href="#">Order</a>
                     </div>
                   </div>
                   <div class="menu-content mt-0">
@@ -87,9 +87,11 @@
                 </div>
                 <div class="modal-footer text-center">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-5">
+                          
                             <div class="input-group">
                                 <div class="input-group-btn">
+                                    <strong>Qty. &nbsp;</strong>
                                     <button class="btn btn-secondary btn-sm" @click="minusQty(menu)">
                                         <i class="fa fa-minus"></i>
                                     </button>
@@ -100,19 +102,17 @@
                                         <i class="fa fa-plus"></i>
                                     </button>
                                 </div>
-
                             </div>
                         </div>
-                        <div class="col-md-8">
-                            <button type="button" @click="AddToTray()" class="book-a-table-btn pull-right">Add to Tray</button>
+                        <div class="col-md-7">
+                            <button type="button" @click="AddToTray()" :disabled="btndis" class="book-a-table-btn pull-right">Add to Tray</button>
                         </div>
                     </div>
-                   
                 </div>
-                
             </div>
         </div>
     </div>
+    
     </main>
 </template>
 
@@ -131,7 +131,8 @@ export default {
             product:{},
             dataset:{
                 search:''
-            }
+            },
+            btndis: false
         }
     },
     mounted() {
@@ -143,6 +144,7 @@ export default {
             this.menu.qty = 1;
             let tt = this.post.price * this.menu.qty;
             this.menu.total = tt;
+            this.this.trays = [];
         });
 
         this.userTray();
@@ -174,6 +176,7 @@ export default {
             this.post = data;
             let tt = data.price * this.menu.qty;
             this.menu.total = tt;
+            this.userTray();
             $('.order-menu').modal('show');
         },
         minusQty(num){
@@ -209,7 +212,7 @@ export default {
 
                if(ck == data.id){
                     let result = 0;
-                    result = cn[0].quantity + 1;
+                    result = cn[0].quantity + this.menu.qty;
                     let data = {'quantity': result};
                     let item = this.trays.find(e =>e.product_id === cn[0].product_id);
                     let idx = this.trays.indexOf(item);
@@ -248,7 +251,10 @@ export default {
                 };
                 this.trays.push(this.product);
                 this.convertJsonString(this.trays);
+               
             }
+            this.product = {};
+            this.post = {};
         },
         convertJsonString(data){
             let cvs = ({'json_data':JSON.stringify(data)})
@@ -258,7 +264,9 @@ export default {
         },
         saveToTray(data){
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.btndis = true;
                 this.$axios.post('api/user-tray', data).then(res=>{
+                    this.btndis = false;
                     this.$emit('show',{'message':'Menu has been added to Tray!', 'status':4});
                     $('.order-menu').modal('hide');
                 }).catch(err=>{
@@ -271,28 +279,12 @@ export default {
                 this.$axios.get('api/user-list-tray').then(res=>{
                     let data = JSON.parse(res.data.json_data);
                     this.trays  = data;
-
-                    console.log(data);
                 });
             });
         }
 
-        // clickMe(filter){
-        //         let fil_ = filter == 0 ? '*' :'.L'+filter
-        //         console.log(fil_)
-        //         let elem = document.querySelector('.menu-container');
-        //         let iso = new Isotope( elem, {
-        //         // options
-        //         itemSelector:'.menu-item',
-        //         layoutMode: 'fitRows'
-        //         });
-        //         iso.isotope({filter:fil_});
-        // }
 
-    
     }
-
-
 }
 </script>
 

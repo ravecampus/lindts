@@ -1,6 +1,6 @@
 <template>
     <div class="fm-body">
-        <div class="fm-content alert alert-dismissible fade show text-center" v-bind:class="status" role="alert">
+        <div class="fm-content alert alert-dismissible fade show text-center bg-orange text-white" v-bind:class="status" role="alert">
             <strong>{{message}}</strong> 
         </div>
     </div>
