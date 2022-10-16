@@ -53,7 +53,8 @@
     @php
     $user_auth_data = [
         'isLoggedin' => true,
-        'user' =>  Auth::user()
+        'user' =>  Auth::user(),
+        'shipping_address'=>Auth::user()->shipping_address()->first()
     ];
     @endphp
 @else

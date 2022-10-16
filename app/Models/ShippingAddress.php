@@ -12,7 +12,7 @@ class ShippingAddress extends Model
     protected $fillable = [
         'user_id', 
         'full_name', 
-        'Address', 
+        'address', 
         'mobile_number',
         'default'
     ];

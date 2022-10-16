@@ -6,6 +6,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserTrayController;
+use App\Http\Controllers\ShippingAddressController;
+use App\Http\Controllers\DeliveryFeeController;
+use App\Http\Controllers\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,9 +29,22 @@ Route::get('product-filter/{id}', [ProductController::class, 'productFilter']);
 Route::middleware('auth:sanctum')->group(function () {
     
     Route::resource('category', FoodCategoryController::class);
+
     Route::post('product-upload', [ProductController::class, 'productUpload']);
     Route::resource('product', ProductController::class);
+
     Route::post('user-tray', [UserTrayController::class, 'userTray']);
     Route::get('user-list-tray', [UserTrayController::class, 'userListTray']);
+    
+    Route::get('shipping-address-auth', [ShippingAddressController::class, 'authShip']);
+    Route::post('shipping-address-default', [ShippingAddressController::class, 'defaultShip']);
+    Route::resource('shipping-address', ShippingAddressController::class);
+
+    Route::post('delivery-fee', [DeliveryFeeController::class,'postDeliveryFee']);
+    Route::get('delivery-fee-get', [DeliveryFeeController::class,'getDeliveryFee']);
+
+    
+    Route::post('setting', [SettingController::class,'postSetting']);
+    Route::get('setting-get', [SettingController::class,'getSetting']);
     
 });

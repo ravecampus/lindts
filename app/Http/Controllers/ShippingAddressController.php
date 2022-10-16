@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\ShippingAddress;
+use Illuminate\Support\Facades\Auth;
 
 class ShippingAddressController extends Controller
 {
@@ -13,7 +15,9 @@ class ShippingAddressController extends Controller
      */
     public function index()
     {
-        // DB::table('table')->where('confirmed', '=', 0)->update(array('confirmed' => 1));
+        $ship = ShippingAddress::all();
+        return response()->json($ship, 200);
+        
     }
 
     /**
@@ -34,7 +38,33 @@ class ShippingAddressController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'full_name' => 'required|string',
+            'address' => 'required|string',
+            'mobile_number' => 'required|regex:/(09)[0-9]{9}/',
+        ]);
+
+        $chk = ShippingAddress::where('user_id', Auth::id())->get();
+        if(count($chk) <= 0 ){
+            $ship = ShippingAddress::create([
+                'full_name' =>$request->full_name,
+                'address' =>$request->address,
+                'mobile_number' =>$request->mobile_number,
+                'user_id' =>Auth::id(),
+                'default' => 1,
+            ]);
+        }else{
+            $ship = ShippingAddress::create([
+                'full_name' =>$request->full_name,
+                'address' =>$request->address,
+                'mobile_number' =>$request->mobile_number,
+                'user_id' =>Auth::id(),
+                'default' => 0,
+            ]);
+        }
+       
+
+        return response()->json($ship, 200);
     }
 
     /**
@@ -80,5 +110,20 @@ class ShippingAddressController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function defaultShip(Request $request){
+        
+        ShippingAddress::where('user_id', Auth::id())->update(array('default' => 0));
+        $ship = ShippingAddress::find($request->id);
+        $ship->default = 1;
+        $ship->save();
+        return response()->json($ship, 200);
+        
+    }
+
+    public function authShip(){
+        $ship = ShippingAddress::where('user_id', Auth::id())->where('default',1)->first();
+        return response()->json($ship, 200);
     }
 }

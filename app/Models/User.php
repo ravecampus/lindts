@@ -48,4 +48,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function shipping_address()
+    {
+        return $this->hasOne(ShippingAddress::class, 'user_id', 'id')->where('default',1);
+    }
+
 }

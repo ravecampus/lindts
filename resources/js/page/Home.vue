@@ -2,8 +2,8 @@
 <div>
     <section id="topbar" class="d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
-        <i class="bi bi-phone d-flex align-items-center"><span>+1 5589 55488 55</span></i>
-        <i class="bi bi-clock ms-4 d-none d-lg-flex align-items-center"><span>Mon-Sat: 11:00 AM - 23:00 PM</span></i>
+        <i class="bi bi-phone d-flex align-items-center"><span>{{ setting.mobile_number }}</span></i>
+        <i class="bi bi-clock ms-4 d-none d-lg-flex align-items-center"><span>{{ setting.schedule }}</span></i>
         </div>
     </section>
 
@@ -141,18 +141,15 @@
                                   <h5 class="text-uppercase mb-3" v-if="showshipad">Shipping</h5>
 
                                   <div class="mb-4 pb-2" v-if="showshipad">
-                                    <select class="form-control">
-                                      <option value="1">Standard-Delivery- €5.00</option>
-                                      <option value="2">Two</option>
-                                      <option value="3">Three</option>
-                                      <option value="4">Four</option>
-                                    </select>
+                                      <h6> Standard Delivery Fee: &#8369;{{ formatAmount(shipfee.amount) }}</h6>
                                   </div>
-                                  
-                                  <div class="d-flex justify-content-between mb-5" v-if="showshipad">
+                                  <i class="small border-bottom">Delivery infomation:</i>
+                                  <div class="d-flex justify-content-between mb-5 pt-2" v-if="showshipad">
+                                 
                                     <div class="text-uppercase">
-                                        <strong>Lavwin Campoll</strong>
-                                        <p>San Mateo Aleosan Cotabato</p>
+                                        <strong>{{ user_d_addr.full_name }}</strong>
+                                        <p class="p-0 m-0">{{ user_d_addr.address }}</p>
+                                        <p class="small p-0">({{ user_d_addr.mobile_number }})</p>
                                     </div>
                                     <div>
                                       <div class="btn-group">
@@ -165,7 +162,7 @@
                                   <hr class="my-4">
                                   <div class="d-flex justify-content-between mb-5">
                                     <h5 class="text-uppercase">Total price</h5>
-                                    <h5>&#8369; 137.00</h5>
+                                    <h5>&#8369; {{ formatAmount(grandTotalAmount()) }} </h5>
                                   </div>
 
                                   <button type="button" class="btn book-a-table-btn btn-block btn-lg"
@@ -196,31 +193,31 @@
                             <div class="form-group">
                                 <label>Full name</label>
                                 <input class="au-input au-input--full"  type="text" v-model="post.full_name" placeholder="Full name">
-                                <span class="errors-material" v-if="errors.full_name">{{errors.full_name[0]}}</span>
+                                <span class="errors-material" v-if="errors_.full_name">{{errors_.full_name[0]}}</span>
                             </div>
                             <div class="form-group">
                                 <label>Address</label>
                                 <input class="au-input au-input--full"  type="text" v-model="post.address" placeholder="Address">
-                                <span class="errors-material" v-if="errors.full_name">{{errors.address[0]}}</span>
+                                <span class="errors-material" v-if="errors_.full_name">{{errors_.address[0]}}</span>
                             </div>
                             <div class="form-group">
                                 <label>Mobile Number</label>
                                 <input class="au-input au-input--full"  type="text" v-model="post.mobile_number" placeholder="Mobile number">
-                                <span class="errors-material" v-if="errors.mobile_number">{{errors.mobile_number[0]}}</span>
+                                <span class="errors-material" v-if="errors_.mobile_number">{{errors_.mobile_number[0]}}</span>
                             </div>
                            
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer text-center bg-secondary">
-                    <button type="button" @click="browseImg()" class="book-a-table-btn">Save</button>
+                    <button type="button" :disabled="btndis" @click="saveShippingAddr()" class="book-a-table-btn">{{ btncap }}</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="modal fade shipping-list" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                <div class="modal-header bg-secondary">
                 </div>
@@ -229,12 +226,26 @@
                         <div class="col-md-12">
                             <h4 class="text-warning">List of Shipping Address</h4>
                            
-                           
+							<ul class="list-group">
+								<li v-for="(shps, idx) in shipaddrs" :key="idx" class="list-group-item d-flex justify-content-between">
+									<div>{{ shps.full_name }}</div>
+									<div>{{ shps.address }}</div>
+									<div>{{ shps.mobile_number }}</div>
+									<div>
+										<label class="switch switch-3d switch-primary mr-3" size="sm">
+											<input type="checkbox" class="switch-input" :checked="chkShip(shps)" @change="changeDefault(shps)">
+											<span class="switch-label"></span>
+											<span class="switch-handle"></span>
+										</label>
+									</div>
+								</li>
+
+							</ul>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer text-center bg-secondary">
-                    <button type="button" @click="browseImg()" class="book-a-table-btn">Save</button>
+                    <!-- <button type="button" class="book-a-table-btn">{{btncap}}</button> -->
                 </div>
             </div>
         </div>
@@ -281,15 +292,28 @@ export default {
       trays:[],
       post:{},
       errors:[],
+      errors_:[],
       order:{},
       showshipad: true,
+      btndis : false,
+      btncap:'Save',
+      shipaddrs:[],
+      user_d_addr:{},
+      setting:{},
+      shipfee:{}
     }
   },
     mounted() {
-      let user = window.Laravel.user;
+	  let user = window.Laravel.user;
+	  let ship = window.Laravel.shipping_address;
+
       this.title = window.Title.app_name;
       this.trayDefault();
       this.userTray();
+      this.listShippingAddr();
+      this.userDefaultShip();
+      this.getSetting();
+      this.getDeliveryFee();
       this.order.pay_method = 1;
 
       const select = (el, all = false) => {
@@ -568,13 +592,83 @@ export default {
            $('.shipping-list').modal('show');
         },
         paymethod(){
-           let num = this.order.pay_method;
+            let num = this.order.pay_method;
+            this.getDeliveryFee();
+            if(num == 1){
+                this.showshipad = true;
+            }else{
+              this.showshipad = false;
+            }
+        },
+        saveShippingAddr(){
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+            this.btndis = true;
+            this.btncap = 'Saving ...';
+            this.$axios.post('api/shipping-address',this.post).then(res=>{
+                this.post = {};
+                this.btndis = false;
+                this.btncap = 'Save';
+                this.listShippingAddr();
+                this.userDefaultShip();
+                $('.shipping-address').modal('hide');
+                $('.shipping-list').modal('show');
+            }).catch(err=>{
+                this.btndis = false;
+                this.btncap = 'Save';
+                this.errors_ = err.response.data.errors
+            })
+        });
+		    },
+        listShippingAddr(){
+          this.$axios.get('sanctum/csrf-cookie').then(response=>{
+            this.$axios.get('api/shipping-address').then(res=>{
+              this.shipaddrs = res.data;
+            })
+                });
+        },
+        chkShip(data){
+          return (data.default == 1) ? true : false;
+        },
+        changeDefault(data){
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.$axios.post('api/shipping-address-default/',data).then(res=>{
+                  this.userDefaultShip();
+                  this.listShippingAddr();
+                }).catch(err=>{
 
-           if(num == 1){
-              this.showshipad = true;
-           }else{
-             this.showshipad = false;
-           }
+                });
+            });
+        },
+        userDefaultShip(){
+
+           this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.$axios.get('api/shipping-address-auth').then(res=>{
+                    this.user_d_addr = res.data;
+                }).catch(err=>{
+
+                });
+            });
+        },
+
+        getSetting(){
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.$axios.get('api/setting-get').then(res=>{
+                    this.setting = res.data;
+                });
+            });
+        },
+        getDeliveryFee(){
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.$axios.get('api/delivery-fee-get').then(res=>{
+                    this.shipfee = res.data;
+                });
+            });
+        },
+
+        grandTotalAmount(){
+            let delfee = this.showshipad ? this.shipfee.amount : 0;
+            let subtotal = this.totalAmount(this.trays);
+            return delfee + subtotal;
         }
     },
 }

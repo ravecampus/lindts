@@ -381,8 +381,8 @@
                                                         <i class="zmdi zmdi-account"></i>Account</a>
                                                 </div>
                                                 <div class="account-dropdown__item">
-                                                    <a href="#">
-                                                        <i class="zmdi zmdi-settings"></i>Setting</a>
+                                                    <router-link :to="{name:'settings'}">
+                                                        <i class="zmdi zmdi-settings"></i>Setting</router-link>
                                                 </div>
                                                 <div class="account-dropdown__item">
                                                     <a href="#">

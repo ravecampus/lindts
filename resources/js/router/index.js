@@ -7,6 +7,7 @@ import Signin from '../page/Signin';
 import Admin from '../admin/Main';
 import FoodCategory from '../admin/FoodCategory';
 import Products from '../admin/Product';
+import Settings from '../admin/Setting';
 
 
 export const routes = [
@@ -52,6 +53,11 @@ export const routes = [
                 path:'products',
                 name:'products',
                 component: Products  
+            },
+            {
+                path:'settings',
+                name:'settings',
+                component: Settings  
             }
         ]
     }
@@ -79,7 +85,8 @@ const userRoutes = [
 const adminRoutes = [
     'admin',
     'food_category',
-    'products'
+    'products',
+    'settings'
     
 ];
 
