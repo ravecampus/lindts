@@ -129,10 +129,12 @@
 
                                   <div class="mb-5">
                                     <div class="form-outline">
-                                    <select v-model="order.pay_method" class="form-control" @change="paymethod()">
+                                    <select v-model="order.payment_mode" class="form-control" @change="paymethod()">
                                         <option value="1">Delivery</option>
                                         <option value="2">Walk in</option>
-                                      </select>
+                                    </select>
+                                    <span class="errors-material" v-if="errors_p.payment_mode">{{errors_p.payment_mode[0]}}</span>
+
                                       <!-- <label class="form-label" for="form3Examplea2">Enter your code</label> -->
                                     </div>
                                   </div>
@@ -141,7 +143,7 @@
                                   <h5 class="text-uppercase mb-3" v-if="showshipad">Shipping</h5>
 
                                   <div class="mb-4 pb-2" v-if="showshipad">
-                                      <h6> Standard Delivery Fee: &#8369;{{ formatAmount(shipfee.amount) }}</h6>
+                                      <h6> Standard Delivery Fee: &#8369;{{ formatAmount(shipfee.amount == undefined ? 0 : shipfee.amount) }}</h6>
                                   </div>
                                   <i class="small border-bottom">Delivery infomation:</i>
                                   <div class="d-flex justify-content-between mb-5 pt-2" v-if="showshipad">
@@ -158,6 +160,9 @@
                                       </div>
                                     </div>
                                   </div>
+                                  <span class="errors-material" v-if="errors_p.full_name">{{errors_p.full_name[0]}}</span>
+                                  <span class="errors-material" v-if="errors_p.delivery_address">{{errors_p.delivery_address[0]}}</span>
+                                  <span class="errors-material" v-if="errors_p.mobile_number">{{errors_p.mobile_number[0]}}</span>
                                   <p v-if="!showshipad"> Please bring order slip on the Store!</p>
                                   <hr class="my-4">
                                   <div class="d-flex justify-content-between mb-5">
@@ -165,7 +170,7 @@
                                     <h5>&#8369; {{ formatAmount(grandTotalAmount()) }} </h5>
                                   </div>
 
-                                  <button type="button" class="btn book-a-table-btn btn-block btn-lg"
+                                  <button type="button" v-if="trays.length > 0" @click="placeOrder()" class="btn book-a-table-btn btn-block btn-lg"
                                     data-mdb-ripple-color="dark">Place Order</button>
 
                                 </div>
@@ -226,26 +231,46 @@
                         <div class="col-md-12">
                             <h4 class="text-warning">List of Shipping Address</h4>
                            
-							<ul class="list-group">
-								<li v-for="(shps, idx) in shipaddrs" :key="idx" class="list-group-item d-flex justify-content-between">
-									<div>{{ shps.full_name }}</div>
-									<div>{{ shps.address }}</div>
-									<div>{{ shps.mobile_number }}</div>
-									<div>
-										<label class="switch switch-3d switch-primary mr-3" size="sm">
-											<input type="checkbox" class="switch-input" :checked="chkShip(shps)" @change="changeDefault(shps)">
-											<span class="switch-label"></span>
-											<span class="switch-handle"></span>
-										</label>
-									</div>
-								</li>
+                            <ul class="list-group">
+                              <li v-for="(shps, idx) in shipaddrs" :key="idx" class="list-group-item d-flex justify-content-between">
+                                <div>{{ shps.full_name }}</div>
+                                <div>{{ shps.address }}</div>
+                                <div>{{ shps.mobile_number }}</div>
+                                <div>
+                                  <label class="switch switch-3d switch-primary mr-3" size="sm">
+                                    <input type="checkbox" class="switch-input" :checked="chkShip(shps)" @change="changeDefault(shps)">
+                                    <span class="switch-label"></span>
+                                    <span class="switch-handle"></span>
+                                  </label>
+                                </div>
+                              </li>
 
-							</ul>
+                            </ul>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer text-center bg-secondary">
                     <!-- <button type="button" class="book-a-table-btn">{{btncap}}</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <div class="modal fade confirmed-order" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+               <div class="modal-header bg-secondary">
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="text-warning">Do you want Place Order?</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer text-center bg-secondary">
+                    <button type="button" @click="confirmedPlaceOrder()" class="btn btn-warning btn-sm">Yes</button>
+                    <button type="button" class="btn btn-secondary btn-sm">No</button>
                 </div>
             </div>
         </div>
@@ -293,6 +318,7 @@ export default {
       post:{},
       errors:[],
       errors_:[],
+      errors_p:[],
       order:{},
       showshipad: true,
       btndis : false,
@@ -314,7 +340,7 @@ export default {
       this.userDefaultShip();
       this.getSetting();
       this.getDeliveryFee();
-      this.order.pay_method = 1;
+      this.order.payment_mode = 1;
 
       const select = (el, all = false) => {
         el = el.trim()
@@ -493,7 +519,7 @@ export default {
             $('.fm-body').show();
             setTimeout(() => {
                 $('.fm-body').fadeOut("slow");
-            }, 3000);
+            }, 500);
         },
         countTrays(data){
           let cc = 0;
@@ -592,7 +618,7 @@ export default {
            $('.shipping-list').modal('show');
         },
         paymethod(){
-            let num = this.order.pay_method;
+            let num = this.order.payment_mode;
             this.getDeliveryFee();
             if(num == 1){
                 this.showshipad = true;
@@ -666,9 +692,44 @@ export default {
         },
 
         grandTotalAmount(){
-            let delfee = this.showshipad ? this.shipfee.amount : 0;
+            let amount = this.shipfee.amount == undefined ? 0 : this.shipfee.amount;
+            let delfee = this.showshipad ? amount : 0;
             let subtotal = this.totalAmount(this.trays);
             return delfee + subtotal;
+        },
+        placeOrder(){
+            let amount = this.shipfee.amount == undefined ? 0 : this.shipfee.amount;
+            this.order.trays = this.trays;
+            this.order.full_name = this.user_d_addr.full_name;
+            this.order.delivery_address = this.user_d_addr.address;
+            this.order.mobile_number = this.user_d_addr.mobile_number;
+            this.order.delivery_fee = amount;
+            this.order.total = this.totalAmount(this.trays);
+            this.order.grand_total = this.totalAmount(this.trays) + amount;
+            // console.log(this.order)
+            $('.confirmed-order').modal('show');
+           
+        },
+        confirmedPlaceOrder(){
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.$axios.post('api/order',this.order).then(res=>{
+                  $('.confirmed-order').modal('hide');
+                  $('.tray').modal('hide');
+                  this.flashMessage({'message':'Orders Placed Successfully!', 'status':4});
+                  this.deleteTray();
+                }).catch(err=>{
+                  $('.confirmed-order').modal('hide');
+                  this.errors = err.response.data.errors
+                });
+            });
+        },
+        deleteTray(){
+            // this.$axios.get('sanctum/csrf-cookie').then(response=>{
+            //     this.$axios.post('api/delete-tray',{}).then(res=>{
+               this.convertJsonString([]);
+               this.trayDefault();
+            //     });
+            // });
         }
     },
 }

@@ -18,8 +18,10 @@ class Order extends Model
         'amount',
         'total',
         'grand_total',
+        'delivery_fee',
         'payment_mode',
         'status',
+        'received_date',
     ];
 
 }

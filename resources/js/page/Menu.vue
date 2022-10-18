@@ -144,7 +144,7 @@ export default {
             this.menu.qty = 1;
             let tt = this.post.price * this.menu.qty;
             this.menu.total = tt;
-            this.this.trays = [];
+            this.trays = [];
         });
 
         this.userTray();
@@ -253,13 +253,12 @@ export default {
                 this.convertJsonString(this.trays);
                
             }
-            this.product = {};
-            this.post = {};
+            // this.product = {};
+            // this.post = {};
         },
         convertJsonString(data){
             let cvs = ({'json_data':JSON.stringify(data)})
             this.saveToTray(cvs)
-            
             this.$emit('trayscount',data);
         },
         saveToTray(data){

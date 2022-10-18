@@ -29,4 +29,11 @@ class UserTrayController extends Controller
 
         return response()->json($usert_, 200);
     }
+
+    public function deleteTray(Request $request){
+        $id = Auth::id();
+        $usert_ = UserTray::where('user_id', $id)->first();
+        $usert_->delete();
+        return response()->json(['User Deleted'], 200);
+    }
 }

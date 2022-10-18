@@ -9,6 +9,7 @@ use App\Http\Controllers\UserTrayController;
 use App\Http\Controllers\ShippingAddressController;
 use App\Http\Controllers\DeliveryFeeController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('product-upload', [ProductController::class, 'productUpload']);
     Route::resource('product', ProductController::class);
-
+    
+    Route::post('delete-tray', [UserTrayController::class,'deleteTray']);
     Route::post('user-tray', [UserTrayController::class, 'userTray']);
     Route::get('user-list-tray', [UserTrayController::class, 'userListTray']);
     
@@ -46,5 +48,6 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('setting', [SettingController::class,'postSetting']);
     Route::get('setting-get', [SettingController::class,'getSetting']);
+    Route::resource('order', OrderController::class);
     
 });
