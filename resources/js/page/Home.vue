@@ -713,10 +713,12 @@ export default {
         confirmedPlaceOrder(){
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
                 this.$axios.post('api/order',this.order).then(res=>{
+                  let orn = res.data.order_number;
                   $('.confirmed-order').modal('hide');
                   $('.tray').modal('hide');
                   this.flashMessage({'message':'Orders Placed Successfully!', 'status':4});
                   this.deleteTray();
+                  this.$router.push({name:'payment',query:{'order':orn}});
                 }).catch(err=>{
                   $('.confirmed-order').modal('hide');
                   this.errors = err.response.data.errors

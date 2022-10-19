@@ -158,5 +158,11 @@ class OrderController extends Controller
         //
     }
 
+    public function orderPayment(Request $request){
+        $id = Auth::id();
+        $order = Order::where('user_id', $id)->where('status',0)->where('order_number', $request->order_number)->first();
+        return response()->json($order, 200);
+    }
+
     
 }

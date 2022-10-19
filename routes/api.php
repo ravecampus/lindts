@@ -10,6 +10,7 @@ use App\Http\Controllers\ShippingAddressController;
 use App\Http\Controllers\DeliveryFeeController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('setting', [SettingController::class,'postSetting']);
     Route::get('setting-get', [SettingController::class,'getSetting']);
+
+    Route::get('order-payment', [OrderController::class, 'orderPayment']);
     Route::resource('order', OrderController::class);
+
+    Route::post('paypal/charges', [PaymentController::class, 'charge']);
+    Route::get('paypal/success',[PaymentController::class,'success']);
     
 });

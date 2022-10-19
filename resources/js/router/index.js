@@ -1,6 +1,8 @@
 import {createWebHistory, createRouter} from "vue-router";
 import Home from '../page/Home';
 import Menu from '../page/Menu';
+import Payment from '../page/Payment';
+import PaymentSuccess from '../page/PaymentSuccess';
 import Dashboard from '../page/Dashboard';
 import Signup from '../page/Signup';
 import Signin from '../page/Signin';
@@ -26,6 +28,17 @@ export const routes = [
                 name:'menu',
                 component: Menu  
             },
+            {
+                path:'payment',
+                name:'payment',
+                component:Payment
+            },
+            {
+                path:'payment/success',
+                name:'paymentsuccess',
+                component:PaymentSuccess
+            },
+            
         ]
 
     },
@@ -74,7 +87,9 @@ const openRoutes = [
     'signin', 
     'home',
     'dashboard',
-    'menu'
+    'menu',
+    'payment',
+    'paymentsuccess'
    
 ];
 
