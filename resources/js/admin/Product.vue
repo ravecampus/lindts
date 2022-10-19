@@ -141,7 +141,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> -->
                     <button type="button" class="btn btn-primary" @click="saveProduct">Save</button>
                 </div>
             </div>
@@ -251,6 +251,7 @@ export default {
                 this.$axios.get('sanctum/csrf-cookie').then(response=>{
                     this.$axios.put('api/product/'+this.post.id,this.post).then(res=>{
                         this.$emit('show',{'message':'Product has been Modified!', 'status':4});
+                        this.post = {};
                         $('#product').modal('hide');
                         this.listOfProduct();
                     }).catch(err=>{
@@ -261,6 +262,7 @@ export default {
                 this.$axios.get('sanctum/csrf-cookie').then(response=>{
                     this.$axios.post('api/product',this.post).then(res=>{
                         this.$emit('show',{'message':'Product Added Successfully!', 'status':4});
+                        this.post = {};
                         $('#product').modal('hide');
                         this.listOfProduct();
                     }).catch(err=>{
