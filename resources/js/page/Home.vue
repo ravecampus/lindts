@@ -1,6 +1,6 @@
 <template>
 <div>
-    <section id="topbar" class="d-flex align-items-center fixed-top">
+    <section id="topbar" class="d-flex align-items-center fixed-top d-print-none">
         <div class="container-fluid container-xl d-flex align-items-center justify-content-center justify-content-lg-start">
         <i class="bi bi-phone d-flex align-items-center"><span>{{ setting.mobile_number }}</span></i>
         <i class="bi bi-clock ms-4 d-none d-lg-flex align-items-center"><span>{{ setting.schedule }}</span></i>
@@ -8,7 +8,7 @@
     </section>
 
   <!-- ======= Header ======= -->
-  <header id="header" class="fixed-top d-flex align-items-center">
+  <header id="header" class="fixed-top d-flex align-items-center d-print-none">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
       <div class="logo me-auto">
@@ -22,31 +22,24 @@
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><router-link class="nav-link scrollto active" :to="{name:'dashboard'}">Home</router-link></li>
-          <li><a class="nav-link scrollto" href="#about">About</a></li>
+          <li><router-link class="nav-link scrollto" :to="{name:'dashboard'}">Home</router-link></li>
+          <!-- <li><a class="nav-link scrollto" href="#about">About</a></li> -->
           <li><router-link class="nav-link scrollto" :to="{name:'menu'}">Menu</router-link></li>
          
           <li><a class="nav-link scrollto" href="#specials">Reservations</a></li>
           <!-- <li><a class="nav-link scrollto" href="#events">Events</a></li>
           <li><a class="nav-link scrollto" href="#chefs">Chefs</a></li>
           <li><a class="nav-link scrollto" href="#gallery">Gallery</a></li>
-          <li class="dropdown"><a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
+         -->
+           <li class="dropdown"><a href="#"><span>{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
-              <li><a href="#">Drop Down 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-right"></i></a>
-                <ul>
-                  <li><a href="#">Deep Drop Down 1</a></li>
-                  <li><a href="#">Deep Drop Down 2</a></li>
-                  <li><a href="#">Deep Drop Down 3</a></li>
-                  <li><a href="#">Deep Drop Down 4</a></li>
-                  <li><a href="#">Deep Drop Down 5</a></li>
-                </ul>
+              <li><a href="#"><strong>Profile</strong></a>
               </li>
-              <li><a href="#">Drop Down 2</a></li>
-              <li><a href="#">Drop Down 3</a></li>
-              <li><a href="#">Drop Down 4</a></li>
+              <li><router-link :to="{name:'myorder'}">My Orders</router-link></li>
+              <li><a href="#">Bookings</a></li>
+              <li><a href="#">Sign out</a></li>
             </ul>
-          </li> -->
+          </li>
           <li><router-link class="nav-link scrollto" :to="{name:'signin'}" >Sign in</router-link></li>
           <li><router-link class="nav-link scrollto" :to="{name:'signup'}">Sign up</router-link></li>
         </ul>
@@ -130,7 +123,7 @@
                                   <div class="mb-5">
                                     <div class="form-outline">
                                     <select v-model="order.payment_mode" class="form-control" @change="paymethod()">
-                                        <option value="1">Delivery</option>
+                                        <option value="1">Deliver</option>
                                         <option value="2">Walk in</option>
                                     </select>
                                     <span class="errors-material" v-if="errors_p.payment_mode">{{errors_p.payment_mode[0]}}</span>
@@ -140,7 +133,7 @@
                                   </div>
                                   <hr class="my-4" v-if="showshipad">
 
-                                  <h5 class="text-uppercase mb-3" v-if="showshipad">Shipping</h5>
+                                  <h5 class="text-uppercase mb-3" v-if="showshipad">Delivery</h5>
 
                                   <div class="mb-4 pb-2" v-if="showshipad">
                                       <h6> Standard Delivery Fee: &#8369;{{ formatAmount(shipfee.amount == undefined ? 0 : shipfee.amount) }}</h6>
@@ -171,7 +164,7 @@
                                     <span class="errors-material">{{errors_p.mobile_number[0]}}</span>
 
                                   </li>
-                                  <p v-if="!showshipad"> Please bring order slip on the Store!</p>
+                                  <p v-if="!showshipad"> Please bring order slip to the Store!</p>
                                   <hr class="my-4">
                                   <div class="d-flex justify-content-between mb-5">
                                     <h5 class="text-uppercase">Total price</h5>
@@ -286,7 +279,7 @@
 
  
 <footer id="footer">
-    <div class="container">
+    <div class="container d-print-none">
       <h3 class="title-design">{{title}}</h3>
       <p>Et aut eum quis fuga eos sunt ipsa nihil. Labore corporis magni eligendi fuga maxime saepe commodi placeat.</p>
       <div class="social-links">
@@ -328,6 +321,7 @@ export default {
       errors_:[],
       errors_p:[],
       order:{},
+      user:{},
       showshipad: true,
       btndis : false,
       btncap:'Save',
@@ -339,7 +333,9 @@ export default {
   },
     mounted() {
 	  let user = window.Laravel.user;
-	  let ship = window.Laravel.shipping_address;
+    let ship = window.Laravel.shipping_address;
+    
+    this.user = user;
 
       this.title = window.Title.app_name;
       this.trayDefault();
@@ -719,6 +715,7 @@ export default {
            
         },
         confirmedPlaceOrder(){
+            let num = this.order.payment_mode;
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
                 this.$axios.post('api/order',this.order).then(res=>{
                   let orn = res.data.order_number;
@@ -726,7 +723,11 @@ export default {
                   $('.tray').modal('hide');
                   this.flashMessage({'message':'Orders Placed Successfully!', 'status':4});
                   this.deleteTray();
-                  this.$router.push({name:'payment',query:{'order':orn}});
+                  if(num == 1){
+                    this.$router.push({name:'payment',query:{'order':orn}});
+                  }else{
+                    this.$router.push({name:'slip',query:{'order':orn}});
+                  }
                 }).catch(err=>{
                   $('.confirmed-order').modal('hide');
                   this.flashMessage({'message':'Oops, Something went wromg!', 'status':3});
@@ -735,12 +736,8 @@ export default {
             });
         },
         deleteTray(){
-            // this.$axios.get('sanctum/csrf-cookie').then(response=>{
-            //     this.$axios.post('api/delete-tray',{}).then(res=>{
-               this.convertJsonString([]);
-               this.trayDefault();
-            //     });
-            // });
+          this.convertJsonString([]);
+          this.trayDefault();
         }
     },
 }

@@ -15,7 +15,7 @@
                 <p class="animate__animated animate__fadeInUp">Ut velit est quam dolor ad a aliquid qui aliquid. Sequi ea ut et est quaerat sequi nihil ut aliquam. Occaecati alias dolorem mollitia ut. Similique ea voluptatem. Esse doloremque accusamus repellendus deleniti vel. Minus et tempore modi architecto.</p>
                 <div>
                   <router-link  :to="{name:'menu'}" class="btn-menu animate__animated animate__fadeInUp scrollto">Our Menu</router-link>
-                  <a href="#book-a-table" class="btn-book animate__animated animate__fadeInUp scrollto">Set Reservation</a>
+                  <a href="#book-a-table" class="btn-book animate__animated animate__fadeInUp scrollto">Book Your Reservation</a>
                 </div>
               </div>
             </div>

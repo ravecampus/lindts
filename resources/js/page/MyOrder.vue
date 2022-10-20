@@ -5,7 +5,7 @@
       <div class="container">
 
         <div class="section-title">
-          <h2 class="title-design">Check our tasty <span>Menu</span></h2>
+          <h2 class="title-design">My Orders <span></span></h2>
         </div>
         
         <div class="row">
@@ -14,8 +14,9 @@
           </div>
           <div class="col-lg-12 d-flex justify-content-center">
             <ul id="menu-flters">
-              <li @click="listOfProductWithFilter(0)">Show All</li>
-              <li v-for="(list, index) in categories" :key="index"   @click="listOfProductWithFilter(list.id)">{{ list.category_name }}</li>
+              <li @click="listOfOrderAuth(1)">Delivery</li>
+              <li  @click="listOfOrderAuth(2)">Walkin</li>
+              <li  @click="listOfOrderAuth(0)">History</li>
             
             </ul>
           </div>
@@ -136,34 +137,29 @@ export default {
         }
     },
     mounted() {
-        this.listCategory();
-        this.listOfProductWithFilter(0);
-        this.menu.qty = 1;
-
+        this.listOfOrderAuth(1);
          $(this.$refs.ordermenu).on('hidden.bs.modal',()=> {
             this.menu.qty = 1;
             let tt = this.post.price * this.menu.qty;
             this.menu.total = tt;
             this.trays = [];
         });
-
-        this.userTray();
         
     },
 
     methods:{
-         listCategory(){
-            this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.$axios.get('api/list-category').then(res=>{
-                    this.categories = res.data;
-                });
-            });
-        },
+        //  listCategory(){
+        //     this.$axios.get('sanctum/csrf-cookie').then(response=>{
+        //         this.$axios.get('api/list-category').then(res=>{
+        //             this.categories = res.data;
+        //         });
+        //     });
+        // },
 
-        listOfProductWithFilter(filter){
+        listOfOrderAuth(filter){
              
                 this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.$axios.get('api/product-filter/'+filter,{params:this.dataset}).then(res=>{
+                this.$axios.get('api/order-auth/'+filter,{params:this.dataset}).then(res=>{
                     this.products = res.data;
                 });
             });
@@ -171,116 +167,11 @@ export default {
         noData(data){
             return data == undefined ? true : (data.length > 0) ? true : false;
         },
-
-        orderMenu(data){
-            this.post = data;
-            let tt = data.price * this.menu.qty;
-            this.menu.total = tt;
-            this.userTray();
-            $('.order-menu').modal('show');
-        },
-        minusQty(num){
-            if(num.qty <= 1){
-                this.menu.qty = 1;
-                return;
-            }else{
-                let ret = 0;
-                ret = num.qty - 1;
-                this.menu.qty = ret;
-            }
-            let tt = this.post.price * this.menu.qty;
-            this.menu.total = tt;
-        },
-        addQty(num){
-            let ret = 0;
-            ret = num.qty + 1;
-            this.menu.qty = ret;
-
-            let tt = this.post.price * this.menu.qty;
-            this.menu.total = tt;
-        },
+        
         formatAmount(num){
             let val = (num/1).toFixed(2).replace(',', '.')
             return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         },
-        AddToTray(){
-            let data = this.post;
-
-            if(this.trays.length > 0){
-                let cn =  this.trays.filter(res=>res.product_id == data.id);
-                let ck = cn[0] == undefined ? 0 : cn[0].product_id;
-
-               if(ck == data.id){
-                    let result = 0;
-                    result = cn[0].quantity + this.menu.qty;
-                    let data = {'quantity': result};
-                    let item = this.trays.find(e =>e.product_id === cn[0].product_id);
-                    let idx = this.trays.indexOf(item);
-                    this.trays[idx].quantity = result;      
-                    this.convertJsonString(this.trays);
-              }else{
-                this.product = {
-                    'product_id': data.id,
-                    'image': data.image,
-                    'code': data.code,
-                    'name': data.name,
-                    'description': data.description,
-                    'food_category_id': data.food_category_id,
-                    'price': data.price,
-                    'price': data.price,
-                    'quantity': this.menu.qty,
-                    'total': this.menu.total
-                };
-                this.trays.push(this.product);
-                this.convertJsonString(this.trays);
-
-              }
-            }else{
-
-                this.product = {
-                    'product_id': data.id,
-                    'image': data.image,
-                    'code': data.code,
-                    'name': data.name,
-                    'description': data.description,
-                    'food_category_id': data.food_category_id,
-                    'price': data.price,
-                    'price': data.price,
-                    'quantity': this.menu.qty,
-                    'total': this.menu.total
-                };
-                this.trays.push(this.product);
-                this.convertJsonString(this.trays);
-               
-            }
-            // this.product = {};
-            // this.post = {};
-        },
-        convertJsonString(data){
-            let cvs = ({'json_data':JSON.stringify(data)})
-            this.saveToTray(cvs)
-            this.$emit('trayscount',data);
-        },
-        saveToTray(data){
-            this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.btndis = true;
-                this.$axios.post('api/user-tray', data).then(res=>{
-                    this.btndis = false;
-                    this.$emit('show',{'message':'Menu has been added to Tray!', 'status':4});
-                    $('.order-menu').modal('hide');
-                }).catch(err=>{
-
-                });
-            });
-        },
-        userTray(){
-            this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.$axios.get('api/user-list-tray').then(res=>{
-                    let data = JSON.parse(res.data.json_data);
-                    this.trays  = data;
-                });
-            });
-        }
 
 
     }

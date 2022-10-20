@@ -3,6 +3,8 @@ import Home from '../page/Home';
 import Menu from '../page/Menu';
 import Payment from '../page/Payment';
 import PaymentSuccess from '../page/PaymentSuccess';
+import Myorder from '../page/MyOrder';
+import Slip from '../page/Slip';
 import Dashboard from '../page/Dashboard';
 import Signup from '../page/Signup';
 import Signin from '../page/Signin';
@@ -37,6 +39,16 @@ export const routes = [
                 path:'payment/success',
                 name:'paymentsuccess',
                 component:PaymentSuccess
+            },
+            {
+                path:'slip',
+                name:'slip',
+                component:Slip
+            },
+            {
+                path:'my-orders',
+                name:'myorder',
+                component:Myorder
             },
             
         ]
@@ -89,7 +101,9 @@ const openRoutes = [
     'dashboard',
     'menu',
     'payment',
-    'paymentsuccess'
+    'paymentsuccess',
+    'slip',
+    'myorder',
    
 ];
 

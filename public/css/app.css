@@ -133,3 +133,7 @@
   background: #ffb03b !important;
   color: #ffffff !important;
 }
+
+.router-link-exact-active {
+  color: #ffb03b !important;
+}

@@ -164,5 +164,20 @@ class OrderController extends Controller
         return response()->json($order, 200);
     }
 
+    public function authOrders(Request $request, $id){
+        $auth = Auth::id();
+        $searchValue = $request->search;
+        $order = Order::with('order_items')->where('user_id', $auth)->where('payment_mode', $id);
+            
+        if($searchValue){
+            $order->where(function($query) use ($searchValue){
+                $query->where('order_number', 'like', '%'.$searchValue.'%')
+                ->orWhere('full_name', 'like', '%'.$searchValue.'%');
+            });
+        }
+       
+        return response()->json($order->get(), 200);
+    }
+
     
 }

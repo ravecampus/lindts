@@ -9,7 +9,7 @@
      <!-- End -->
     <div class="row">
         <div class="col-lg-6 mx-auto">
-            <div class="card" v-if="checkPayment(order)" >
+            <div class="card" v-if="order.id != undefined">
                 <div class="card-header">
                     <div class="bg-white shadow-sm pt-4 pl-2 pr-2 pb-2 text-center">
                         <h4>{{ this.title }}</h4>
@@ -17,6 +17,7 @@
                     <!-- Paypal info -->
                     <div id="paypal" class="pt-3">
                         <h6 class="pb-2">Order #: {{ order.order_number }}</h6>
+                        <hr class="my-2">
                         <div class="form-group "> 
                              <label class="radio-inline">
                                  Name / Address : <strong>{{ order.full_name }} / {{ order.delivery_address}} </strong>
@@ -24,19 +25,23 @@
                         </div>
                         <div class="form-group "> 
                              <label class="radio-inline">
-                                 Amount : <strong>&#8369; {{ formatAmount(order.grand_total) }}</strong>
+                                 Total : <strong>&#8369; {{ formatAmount(order.total) }}</strong>
                              </label> 
                         </div>
+                       
                         <div class="form-group "> 
-                             <label class="radio-inline"> 
-                                Payment ID : <strong>{{ payment.payment_id }}</strong>
-                             </label>
+                            <label class="radio-inline">
+                                Grand Total : <strong>&#8369; {{ formatAmount(order.grand_total) }}</strong>
+                             </label> 
                         </div>
-                        <div class="form-group "> 
-                             <label class="radio-inline"> 
-                                Payer Email :  <strong>{{ payment.payer_email }}</strong>
-                             </label>
+                        <hr class="my-2">
+                         <div class="form-group "> 
+                            <label class="radio-inline">
+                              Order Slip
+                             </label> 
+                             <p class="small"> Serve as reference for your Orders Or give your Order Number and your complete name!</p>
                         </div>
+                        <hr class="my-4">
                         <p> <button type="button" @click="printReceipt()" class="book-a-table-btn d-print-none"><i class="fa fa-print mr-2"></i>Print</button> </p>
                         <!-- <p class="text-muted"> Note: After clicking on the button, you will be directed to a secure gateway for payment. After completing the payment process, you will be redirected back to the website to view details of your order. </p> -->
                     </div> <!-- End -->
@@ -60,15 +65,10 @@ export default {
         }
     },
     methods: {
-        setPaymentSuccess(query){
+        getOrderByPayment(id){
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.message = "Processing ...";
-                this.$axios.get('api/paypal/success', {params:query}).then(res=>{
-                //    this.$router.push({name:'toship'});
-                    // console.log(res.data)
-                    this.message = " ";
-                    this.order = res.data.order;
-                    this.payment = res.data.payment;
+                this.$axios.get('api/order-payment',{params:{'order_number':id}}).then(res=>{
+                    this.order = res.data;
                 });
             });
         },
@@ -77,23 +77,13 @@ export default {
             let val = (num_/1).toFixed(2).replace(',', '.')
             return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         },
-        checkPayment(data){
-            let ret = false;
-            if(data != null){
-                ret = true
-               
-            }else{
-                this.$router.push({name:'dashboard'});
-            }
-            return ret;
-        },
         printReceipt(){
             window.print();
         }
     },
     mounted() {
-        let query = this.$route.query;
-        this.setPaymentSuccess(query)
+        let id = this.$route.query.order;
+        this.getOrderByPayment(id);
         this.title = window.Title.app_name;
     },
 }
