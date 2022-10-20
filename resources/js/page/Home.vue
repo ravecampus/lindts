@@ -160,9 +160,17 @@
                                       </div>
                                     </div>
                                   </div>
-                                  <span class="errors-material" v-if="errors_p.full_name">{{errors_p.full_name[0]}}</span>
-                                  <span class="errors-material" v-if="errors_p.delivery_address">{{errors_p.delivery_address[0]}}</span>
-                                  <span class="errors-material" v-if="errors_p.mobile_number">{{errors_p.mobile_number[0]}}</span>
+                                  <li v-if="errors_p.full_name">
+                                    <span class="errors-material">{{errors_p.full_name[0]}}</span>
+                                  </li>
+                                  <li v-if="errors_p.delivery_address">
+                                    <span class="errors-material" >{{errors_p.delivery_address[0]}}</span>
+
+                                  </li>
+                                  <li  v-if="errors_p.mobile_number">
+                                    <span class="errors-material">{{errors_p.mobile_number[0]}}</span>
+
+                                  </li>
                                   <p v-if="!showshipad"> Please bring order slip on the Store!</p>
                                   <hr class="my-4">
                                   <div class="d-flex justify-content-between mb-5">
@@ -264,7 +272,7 @@
                 <div class="modal-body bg-light">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4 class="text-warning">Do you want Place Order?</h4>
+                            <h4 class="text-warning">Do you want to Place your Order?</h4>
                         </div>
                     </div>
                 </div>
@@ -721,7 +729,8 @@ export default {
                   this.$router.push({name:'payment',query:{'order':orn}});
                 }).catch(err=>{
                   $('.confirmed-order').modal('hide');
-                  this.errors = err.response.data.errors
+                  this.flashMessage({'message':'Oops, Something went wromg!', 'status':3});
+                  this.errors_p = err.response.data.errors
                 });
             });
         },

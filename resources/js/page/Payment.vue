@@ -14,7 +14,7 @@
                         <h4>Paypal</h4>
                     </div>
                     <!-- Paypal info -->
-                    <div id="paypal" class="pt-3">
+                    <div id="paypal" class="pt-3" v-if="order.id != undefined" >
                         <h6 class="pb-2">Order #: {{ order.order_number}}</h6>
                         <div class="form-group "> 
                              <label class="radio-inline">
@@ -36,7 +36,7 @@
                                 Total Amount :  <strong>&#8369; {{ formatAmount(order.grand_total) }}</strong>
                              </label>
                         </div>
-                        <p> <button type="button" @click="payByPaypal" class="book-a-table-btn "><i class="fab fa-paypal mr-2"></i>{{ btn_cap }}</button> </p>
+                        <p> <button v-if="order.id != undefined" type="button" @click="payByPaypal" class="book-a-table-btn "><i class="fab fa-paypal mr-2"></i>{{ btn_cap }}</button> </p>
                         <p class="text-muted"> Note: After clicking on the button, you will be directed to a secure gateway for payment. After completing the payment process, you will be redirected back to the website to view details of your order. </p>
                     </div> <!-- End -->
                  
