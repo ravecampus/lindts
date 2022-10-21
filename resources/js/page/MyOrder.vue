@@ -23,31 +23,68 @@
         </div>
 
         <div class="row menu-container d-flex justify-content-center mt-5">
-
-           <div v-for="(lst,idx) in products" :key="idx" class="col-lg-4 menu-item" v-bind:class="'L'+lst.food_category_id">
-              <div class="card product-shadow">
-                <div class="card-body">
-                  <div class="menu-img">
-                    <img :src="lst.image == null ? '../images/icon/icon.png' :'../storage/products/'+lst.image" class="m-img" alt="">
-                    <!-- <span></span> -->
-                    <div>
-                        <a class="book-a-table-btn btn-sm-table" @click="orderMenu(lst)" href="#">Order</a>
+          <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
+                    <tbody v-for="(list, idx) in orders" :key="idx">
+                            <tr class="tr-shadow">
+                                <td>{{ list.order_number }}
+                                    <!-- <img class="img-thumbnail w-50" :src="list.image == null ? '../images/icon/icon.png' :'../storage/products/'+list.image" />
+                                    <div class="">
+                                        <a href="#" @click="showUpload(list)" >Edit </a>
+                                    </div> -->
+                                </td>
+                                <td><span class="status--process">&#8369;{{ formatAmount(list.total) }}</span></td>
+                                <td class="desc">&#8369; {{ list.payment_mode == 1 ? formatAmount(list.delivery_fee) : 0 }}</td>
+                                <td>
+                                    <span>&#8369; {{ formatAmount(list.grand_total) }}</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-warning btn-sm">View items
+                                        <i class="badge badge-success">{{ list.order_items.length }}</i>
+                                    </button>
+                                    <!-- <span>{{list.order_items }}</span> -->
+                                </td>
+                                <td>
+                                    <span>{{list.status }}</span>
+                                </td>
+                                <td>
+                                    <span>{{formatDate(list.created_at) }}</span>
+                                </td>
+                                <td>
+                                    <div class="table-data-feature">
+                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                            <i class="zmdi zmdi-mail-send"></i>
+                                        </button> -->
+                                        <button class="item" data-toggle="tooltip" data-placement="top"  @click="editProductModal(list)" title="Edit">
+                                            <i class="zmdi zmdi-edit"></i>
+                                        </button>
+                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                            <i class="zmdi zmdi-delete"></i>
+                                        </button>
+                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="More">
+                                            <i class="zmdi zmdi-more"></i>
+                                        </button> -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="spacer"></tr>
+                            
+                        </tbody>
+                    </data-table>
+                    <div class="col-md-12">
+                        <div class="pull-right">
+                            <pagination :pagination="pagination"
+                                @prev="listOfOrderAuth(pagination.prevPageUrl)"
+                                @next="listOfOrderAuth(pagination.nextPageUrl)"
+                                v-show="noData(orders)">
+                            </pagination>
+                        </div>
+                        
                     </div>
-                  </div>
-                  <div class="menu-content mt-0">
-                    <a href="#">{{lst.name}}</a><span>&#8369;{{formatAmount(lst.price)}}</span>
-                  </div>
-                  <div class="menu-ingredients">
-                   {{lst.description}}
-                  </div>
-                </div>
-              </div>
-          </div>
 
         </div>
-        <div class="card" v-show="!noData(products)">
+        <div class="card" v-show="!noData(orders)">
             <div class="card-body">
-                <div class="text-center">No Menu Found!</div>
+                <div class="text-center">No Orders Found!</div>
             </div>
         </div>
 
@@ -118,10 +155,32 @@
 </template>
 
 <script>
+import DataTable from '../table/DataTable'
+import PaginationVue from '../table/Pagination';
+
 export default {
+    components:{
+        dataTable:DataTable,
+        pagination:PaginationVue
+    },
     data(){
+        let sortOrders = {};
+        let columns =[
+        {label:'Order Number', name:'order_number'},
+        {label:'Total', name:'total'},
+        {label:'Delivery Fee', name:'delivery_fee'},
+        {label:'Grand Total', name:'Grand Total'},
+        {label:'Items', name:null},
+        {label:'Status', name:'status'},
+        {label:'Order Date', name:'created_at'},
+        {label:' ', name:null},
+        ];
+        
+        columns.forEach(column=>{
+            sortOrders[column.name] = -1;
+        });
         return{
-            trays:[],
+            orders:[],
             categories:[],
             products:[],
             post:{
@@ -133,11 +192,34 @@ export default {
             dataset:{
                 search:''
             },
-            btndis: false
+            columns:columns,
+            sortOrders:sortOrders,
+            sortKey:'created_at',
+            btndis: false,
+            tableData:{
+                draw:0,
+                length:10,
+                search:'',
+                column:0,
+                archive:0,
+                dir:'desc',
+                filter:0,
+            },
+            pagination:{
+                lastPage:'',
+                currentPage:'',
+                total:'',
+                lastPageUrl:'',
+                nextPageurl:'',
+                prevPageUrl:'',
+                from:'',
+                to:''
+            },
+            
         }
     },
     mounted() {
-        this.listOfOrderAuth(1);
+        this.listOfOrderAuth();
          $(this.$refs.ordermenu).on('hidden.bs.modal',()=> {
             this.menu.qty = 1;
             let tt = this.post.price * this.menu.qty;
@@ -156,13 +238,42 @@ export default {
         //     });
         // },
 
-        listOfOrderAuth(filter){
+        listOfOrderAuth(url='api/order-auth'){
              
                 this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.$axios.get('api/order-auth/'+filter,{params:this.dataset}).then(res=>{
-                    this.products = res.data;
+                this.tableData.draw ++;
+                this.$axios.get(url,{params:this.tableData}).then(res=>{
+                    let data = res.data;
+                    if(this.tableData.draw == data.draw){
+                        this.orders = data.data.data;
+                        this.configPagination(data.data);
+                    }else{
+                        this.not_found = true;
+                    }
                 });
             });
+        },
+        configPagination(data){
+            this.pagination.lastPage = data.last_page;
+            this.pagination.currentPage = data.current_page;
+            this.pagination.total = data.total;
+            this.pagination.lastPageUrl = data.last_page_url;
+            this.pagination.nextPageUrl = data.next_page_url;
+            this.pagination.prevPageUrl = data.prev_page_url;
+            this.pagination.from = data.from;
+            this.pagination.to = data.to;
+        },
+        sortBy(key){
+            if(key != null){
+                this.sortKey = key;
+                this.sortOrders[key] = this.sortOrders[key] * -1;
+                this.tableData.column = this.getIndex(this.columns, 'name', key);
+                this.tableData.dir = this.sortOrders[key] === 1 ? 'asc' : 'desc';
+                this.listOfOrderAuth();
+            }
+        },
+        getIndex(array, key, value){
+            return array.findIndex(i=>i[key] == value)
         },
         noData(data){
             return data == undefined ? true : (data.length > 0) ? true : false;
@@ -172,7 +283,13 @@ export default {
             let val = (num/1).toFixed(2).replace(',', '.')
             return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         },
-
+        formatDate(da){
+            let d = new Date(da);
+            const day =("0" + d.getDate()).slice(-2);
+            const month = ("0"+(d.getMonth()+1)).slice(-2);
+            const year =  d.getFullYear();
+            return  month+ "-" + day  + "-" + year;
+        },
 
     }
 }

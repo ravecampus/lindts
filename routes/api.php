@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('setting', [SettingController::class,'postSetting']);
     Route::get('setting-get', [SettingController::class,'getSetting']);
 
-    Route::get('order-auth/{id}', [OrderController::class, 'authOrders']);
+    Route::get('order-auth', [OrderController::class, 'authOrders']);
     Route::get('order-payment', [OrderController::class, 'orderPayment']);
     Route::resource('order', OrderController::class);
 

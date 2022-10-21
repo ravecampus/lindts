@@ -164,20 +164,30 @@ class OrderController extends Controller
         return response()->json($order, 200);
     }
 
-    public function authOrders(Request $request, $id){
+    public function authOrders(Request $request){
+
+        $columns = ['order_number','full_name', 'delivery_address', 'created_at'];
+        $length = $request->length;
+        $column = $request->column;
+        $dir = $request->dir;
         $auth = Auth::id();
+        $filter = $request->filter;
         $searchValue = $request->search;
-        $order = Order::with('order_items')->where('user_id', $auth)->where('payment_mode', $id);
+        if($filter == 0){
+            $query = Order::with('order_items')->where('user_id', $auth)->orderBy($columns[$column], $dir);
+        }else{
+            $query = Order::with('order_items')->where('user_id', $auth)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
+        }
             
         if($searchValue){
-            $order->where(function($query) use ($searchValue){
+            $query->where(function($query) use ($searchValue){
                 $query->where('order_number', 'like', '%'.$searchValue.'%')
                 ->orWhere('full_name', 'like', '%'.$searchValue.'%');
             });
         }
        
-        return response()->json($order->get(), 200);
+        $projects = $query->paginate($length);
+        return ['data'=>$projects, 'draw'=> $request->draw];
     }
-
     
 }
