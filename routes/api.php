@@ -50,11 +50,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('setting', [SettingController::class,'postSetting']);
     Route::get('setting-get', [SettingController::class,'getSetting']);
 
+    Route::post('set-status', [OrderController::class, 'setStatus']);
     Route::get('order-auth', [OrderController::class, 'authOrders']);
     Route::get('order-payment', [OrderController::class, 'orderPayment']);
     Route::resource('order', OrderController::class);
 
     Route::post('paypal/charges', [PaymentController::class, 'charge']);
     Route::get('paypal/success',[PaymentController::class,'success']);
+
+    Route::post('user-profile',[AuthController::class,'userProfile']);
+    Route::post('user-password',[AuthController::class,'userPassword']);
     
 });

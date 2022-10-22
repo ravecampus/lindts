@@ -4,6 +4,8 @@ import Menu from '../page/Menu';
 import Payment from '../page/Payment';
 import PaymentSuccess from '../page/PaymentSuccess';
 import Myorder from '../page/MyOrder';
+import MyProfile from '../page/MyProfile';
+import Reservation from '../page/Reservation';
 import Slip from '../page/Slip';
 import Dashboard from '../page/Dashboard';
 import Signup from '../page/Signup';
@@ -49,6 +51,16 @@ export const routes = [
                 path:'my-orders',
                 name:'myorder',
                 component:Myorder
+            },
+            {
+                path:'my-profile',
+                name:'myprofile',
+                component:MyProfile
+            },
+            {
+                path:'reservation',
+                name:'reservation',
+                component:Reservation
             },
             
         ]
@@ -104,6 +116,8 @@ const openRoutes = [
     'paymentsuccess',
     'slip',
     'myorder',
+    'myprofile',
+    'reservation'
    
 ];
 

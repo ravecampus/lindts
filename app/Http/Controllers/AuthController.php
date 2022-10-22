@@ -69,4 +69,41 @@ class AuthController extends Controller
        ];
        return response()->json($response);
    }
+
+   public function userProfile(Request $request){
+
+        $request->validate([
+            'username' =>'required|string',
+            'first_name' =>'required|string',
+            'last_name' =>'required|string',
+            'address' =>'required|string',
+            'age' =>'required|numeric',
+            'mobile_number' => 'required|regex:/(09)[0-9]{9}/',
+            'email' =>'required|email',
+        ]);
+
+        $id = Auth::id();
+        $user = User::find($id);
+        $user->username = $request->username;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->address = $request->address;
+        $user->age = $request->age;
+        $user->mobile_number = $request->mobile_number;
+        $user->email = $request->email;
+        $user->save();
+        return response()->json($user, 200);
+   }
+
+   public function userPassword(Request $request){
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+        
+        $user = User::find(Auth::id());
+        $user->password = bcrypt($request->password);
+        $user->save();
+        return response()->json($user, 200);
+    }
+
 }

@@ -174,9 +174,13 @@ class OrderController extends Controller
         $filter = $request->filter;
         $searchValue = $request->search;
         if($filter == 0){
-            $query = Order::with('order_items')->where('user_id', $auth)->orderBy($columns[$column], $dir);
+            $query = Order::with('order_items')->where('status', '!=', 4)->where('status', '!=', 5)->where('user_id', $auth)->orderBy($columns[$column], $dir);
+        }else if($filter == 4){
+            $query = Order::with('order_items')->where('status', 4)->where('user_id', $auth)->orderBy($columns[$column], $dir);
+        }else if($filter == 3){
+            $query = Order::with('order_items')->where('status', 5)->where('user_id', $auth)->orderBy($columns[$column], $dir);
         }else{
-            $query = Order::with('order_items')->where('user_id', $auth)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
+            $query = Order::with('order_items')->where('status', '!=', 4)->where('status', '!=', 5)->where('user_id', $auth)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
         }
             
         if($searchValue){
@@ -188,6 +192,14 @@ class OrderController extends Controller
        
         $projects = $query->paginate($length);
         return ['data'=>$projects, 'draw'=> $request->draw];
+    }
+
+    public function setStatus(Request $request){
+        $order = Order::find($request->id);
+        $order->status = $request->status;
+        $order->save();
+
+        return response()->json($order, 200);
     }
     
 }

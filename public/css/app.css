@@ -137,3 +137,8 @@
 .router-link-exact-active {
   color: #ffb03b !important;
 }
+
+.img-myorder {
+  width: 50px !important;
+  height: 50px !important;
+}

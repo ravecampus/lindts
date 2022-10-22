@@ -98,7 +98,18 @@ class ShippingAddressController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'full_name' => 'required|string',
+            'address' => 'required|string',
+            'mobile_number' => 'required|regex:/(09)[0-9]{9}/',
+        ]);
+        $ship = ShippingAddress::find($id);
+        $ship->full_name = $request->full_name;
+        $ship->address = $request->address;
+        $ship->mobile_number = $request->mobile_number;
+        $ship->save();
+
+        return response()->json($ship, 200);
     }
 
     /**

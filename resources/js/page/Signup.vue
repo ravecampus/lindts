@@ -67,7 +67,7 @@
                                 </div>
                                 <div class="login-checkbox">
                                     <label>
-                                        <input type="checkbox" name="aggree">Agree the terms and policy
+                                        <input type="checkbox" v-model="post.agree" @change="agreeButton(post.agree)">Agree the terms and policy
                                     </label>
                                 </div>
                                 <button @click="signup()" class="btn btn-warning btn-block text-white" :disabled="btn_dis" type="button">{{ btn_txt }}</button>
@@ -95,7 +95,7 @@ export default {
             post:{},
             errors:[],
             btn_txt:"sign up",
-            btn_dis: false
+            btn_dis: true
         }
     },
     methods:{
@@ -113,6 +113,14 @@ export default {
                     this.errors = err.response.data.errors
                 });
             });
+        },
+
+        agreeButton(data){
+            if(data){
+                this.btn_dis = false;
+            }else{
+                this.btn_dis = true;
+            }
         }
     }
 }

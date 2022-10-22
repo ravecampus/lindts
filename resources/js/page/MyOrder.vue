@@ -10,19 +10,25 @@
         
         <div class="row">
           <div class="col-lg-12 mb-3">
-              <input type="text" v-model="dataset.search" @input="listOfProductWithFilter(0)" class="form-control" placeholder="Search...">
+              <input type="text" v-model="tableData.search" @input="listOfOrderAuth()" class="form-control" placeholder="Search...">
           </div>
           <div class="col-lg-12 d-flex justify-content-center">
             <ul id="menu-flters">
-              <li @click="listOfOrderAuth(1)">Delivery</li>
-              <li  @click="listOfOrderAuth(2)">Walkin</li>
-              <li  @click="listOfOrderAuth(0)">History</li>
+              <li @click="filterOrder(0)">All</li>
+              <li @click="filterOrder(1)">Delivery</li>
+              <li  @click="filterOrder(2)">Walkin</li>
+              <li  @click="filterOrder(3)">Canceled</li>
+              <li  @click="filterOrder(4)">History</li>
             
             </ul>
           </div>
+          <hr>
+          <div class="col-lg-12 text-center mt-2">
+             <h4> {{ tableData.filter == 0 ? "All" : tableData.filter == 1 ? " Delivery": tableData.filter == 2 ? "Walkin" :tableData.filter == 3 ? "Canceled": "History" }}</h4>
+          </div>
         </div>
 
-        <div class="row menu-container d-flex justify-content-center mt-5">
+        <div class="row menu-container d-flex justify-content-center mt-2">
           <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
                     <tbody v-for="(list, idx) in orders" :key="idx">
                             <tr class="tr-shadow">
@@ -38,31 +44,25 @@
                                     <span>&#8369; {{ formatAmount(list.grand_total) }}</span>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-warning btn-sm">View items
+                                    <button type="button" @click="orderItem(list.order_items)" class="btn btn-warning btn-sm">View items
                                         <i class="badge badge-success">{{ list.order_items.length }}</i>
                                     </button>
                                     <!-- <span>{{list.order_items }}</span> -->
                                 </td>
                                 <td>
-                                    <span>{{list.status }}</span>
+                                    <span class="text-danger">{{ setStatus(list) }}</span>
                                 </td>
                                 <td>
                                     <span>{{formatDate(list.created_at) }}</span>
                                 </td>
                                 <td>
-                                    <div class="table-data-feature">
-                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                            <i class="zmdi zmdi-mail-send"></i>
-                                        </button> -->
-                                        <button class="item" data-toggle="tooltip" data-placement="top"  @click="editProductModal(list)" title="Edit">
-                                            <i class="zmdi zmdi-edit"></i>
+                                    <div class="btn-group" v-if="list.status == 0 && list.payment_mode == 1">
+                                        <button class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top"  @click="payOrder(list)" title="Pay with Paypal">
+                                            Pay
                                         </button>
-                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
-                                            <i class="zmdi zmdi-delete"></i>
+                                        <button class="btn btn-sm btn-secondary" @click="showCancelOrder(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
+                                            Cancel
                                         </button>
-                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="More">
-                                            <i class="zmdi zmdi-more"></i>
-                                        </button> -->
                                     </div>
                                 </td>
                             </tr>
@@ -91,11 +91,11 @@
       </div>
     </section><!-- End Menu Section -->
 
-    <div class="modal fade order-menu" ref="ordermenu" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade order-items" ref="ordermenu" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="mediumModalLabel">Menu to Tray</h5>
+                    <h5 class="modal-title" id="mediumModalLabel">Menu</h5>
                     <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button> -->
@@ -103,21 +103,34 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="menu-img-lg">
-                               <img :src="post.image == null ? '../images/icon/icon.png' :'../storage/products/'+post.image" class="m-img" alt="">
-                                <!-- <a href="#" @click="resetLogo()">Reset Default</a> -->
-                                
-                            </div>
-                            <div class="text-center mt-2">
-                                <div class="menu-content mt-0">
-                                <strong>{{post.name}} </strong> (<span>&#8369;{{formatAmount(post.price)}}</span>)
-                                </div>
-                                <div class="menu-ingredients">
-                                {{post.description}}
-                                </div>
-                                <div v-if="menu.total > 0" class="mt-4">
-                                     Total: <span class="badge badge-secondary">&#8369; {{ formatAmount(menu.total) }}</span>
-                                </div>
+                            <div class="table-responsive card">
+                                <table class="table table-sm card-body">
+                                    <thead>
+                                        <tr>
+                                            <th>Image</th>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(ls, idx) in items" :key="idx">
+                                            <td>
+                                            <div class="image-responsive img-myorder">
+                                                <img :src="ls.image == null ? '../images/icon/icon.png' :'../storage/products/'+ls.image" class="m-img" alt="">
+                                                
+                                            </div>
+                                            </td>
+                                            <td>{{ ls.code }}</td>
+                                            <td>{{ ls.name }}</td>
+                                            <td>{{ ls.quantity }}</td>
+                                            <td>{{ formatAmount(ls.price) }}</td>
+                                            <td>{{ formatAmount(ls.price  * ls.quantity) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <input type="file" id="uploader" accept="image/gif, image/jpeg" @change="uploadImage" class="hidden">
@@ -125,27 +138,27 @@
                 </div>
                 <div class="modal-footer text-center">
                     <div class="row">
-                        <div class="col-md-5">
-                          
-                            <div class="input-group">
-                                <div class="input-group-btn">
-                                    <strong>Qty. &nbsp;</strong>
-                                    <button class="btn btn-secondary btn-sm" @click="minusQty(menu)">
-                                        <i class="fa fa-minus"></i>
-                                    </button>
-                                </div>
-                                <input type="number" readonly v-model="menu.qty"  placeholder="Qty" class="form-control form-control-sm">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-secondary btn-sm" @click="addQty(menu)">
-                                        <i class="fa fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <button type="button" @click="AddToTray()" :disabled="btndis" class="book-a-table-btn pull-right">Add to Tray</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade cancel-order" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="text-warning">Do you want to cancel your Orders?</h4>
                         </div>
                     </div>
+                </div>
+                <div class="modal-footer text-center">
+                    <button type="button" @click="cancelOrder(canda)" class="btn btn-warning btn-sm">Yes</button>
+                    <button type="button" @click="cancelButton()" class="btn btn-secondary btn-sm">No</button>
                 </div>
             </div>
         </div>
@@ -186,12 +199,13 @@ export default {
             post:{
                 qty:0
             },
-        
+            items:{},
             menu:{},
             product:{},
             dataset:{
                 search:''
             },
+            canda:{},
             columns:columns,
             sortOrders:sortOrders,
             sortKey:'created_at',
@@ -290,6 +304,45 @@ export default {
             const year =  d.getFullYear();
             return  month+ "-" + day  + "-" + year;
         },
+        orderItem(data){
+            this.items = data;
+            $('.order-items').modal('show');
+        },
+        filterOrder(num){
+            this.tableData.filter = num;
+            this.listOfOrderAuth();
+        },
+        payOrder(data){
+            this.$router.push({name:'payment', query:{'order':data.order_number}});
+        },
+        setStatus(data){
+            let mode = data.payment_mode;
+            let status = data.status;
+            if(mode == 1){
+                return ( status == 0 ? "Unpaid" : status == 1 ? "Paid and Received" : status == 2 ? " Kitchen" : status == 3 ? "In Transit" :  status == 4 ? "Delivered" : "Cancel") +" (Delivery)";
+            }else{
+                return ( status == 0 ? "Received" : status == 1 ? "Kitchen" : status == 2 ? "Ready to Pickup" :status == 4 ? "Picked" : "Cancel") + " (Walkin)";
+            }
+        },
+        showCancelOrder(data){
+            this.canda = data;
+            $('.cancel-order').modal('show');
+        },
+        cancelOrder(data){
+            this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('api/set-status', {'status':5,'id':data.id})
+                    .then(response => {
+                        this.listOfOrderAuth();
+                        $('.cancel-order').modal('hide');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            })
+        },
+        cancelButton(){
+             $('.cancel-order').modal('hide');
+        }
 
     }
 }

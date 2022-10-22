@@ -26,22 +26,18 @@
           <!-- <li><a class="nav-link scrollto" href="#about">About</a></li> -->
           <li><router-link class="nav-link scrollto" :to="{name:'menu'}">Menu</router-link></li>
          
-          <li><a class="nav-link scrollto" href="#specials">Reservations</a></li>
-          <!-- <li><a class="nav-link scrollto" href="#events">Events</a></li>
-          <li><a class="nav-link scrollto" href="#chefs">Chefs</a></li>
-          <li><a class="nav-link scrollto" href="#gallery">Gallery</a></li>
-         -->
-           <li class="dropdown"><a href="#"><span>{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</span> <i class="bi bi-chevron-down"></i></a>
+          <li><router-link :to="{name:'reservation'}" class="nav-link scrollto">Reservations</router-link></li>
+           <li v-if="auth" class="dropdown"><a href="#"><span>{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
-              <li><a href="#"><strong>Profile</strong></a>
+              <li><router-link :to="{name:'myprofile'}"><strong>Profile</strong></router-link>
               </li>
               <li><router-link :to="{name:'myorder'}">My Orders</router-link></li>
-              <li><a href="#">Bookings</a></li>
-              <li><a href="#">Sign out</a></li>
+              <!-- <li><a href="#">Bookings</a></li> -->
+              <li><a @click="logout()" href="#">Sign out</a></li>
             </ul>
           </li>
-          <li><router-link class="nav-link scrollto" :to="{name:'signin'}" >Sign in</router-link></li>
-          <li><router-link class="nav-link scrollto" :to="{name:'signup'}">Sign up</router-link></li>
+          <li v-if="!auth"><router-link class="nav-link scrollto" :to="{name:'signin'}" >Sign in</router-link></li>
+          <li v-if="!auth"><router-link class="nav-link scrollto" :to="{name:'signup'}">Sign up</router-link></li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
@@ -187,7 +183,7 @@
         </div>
     </div>
 
-    <div class="modal fade shipping-address" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+    <div class="modal fade shipping-address" tabindex="1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                <div class="modal-header bg-secondary">
@@ -244,6 +240,11 @@
                                     <span class="switch-handle"></span>
                                   </label>
                                 </div>
+                                <div class="table-data-feature">
+                                    <button class="item" data-toggle="tooltip"  @click="editShipAddress(shps)" title="Edit">
+                                      <i class="zmdi zmdi-edit"></i>
+                                    </button>
+                                </div>
                               </li>
 
                             </ul>
@@ -271,7 +272,7 @@
                 </div>
                 <div class="modal-footer text-center bg-secondary">
                     <button type="button" @click="confirmedPlaceOrder()" class="btn btn-warning btn-sm">Yes</button>
-                    <button type="button" class="btn btn-secondary btn-sm">No</button>
+                    <button type="button" @click="cancelButton()" class="btn btn-secondary btn-sm">No</button>
                 </div>
             </div>
         </div>
@@ -328,7 +329,8 @@ export default {
       shipaddrs:[],
       user_d_addr:{},
       setting:{},
-      shipfee:{}
+      shipfee:{},
+      auth:false,
     }
   },
     mounted() {
@@ -338,12 +340,16 @@ export default {
     this.user = user;
 
       this.title = window.Title.app_name;
-      this.trayDefault();
-      this.userTray();
-      this.listShippingAddr();
-      this.userDefaultShip();
-      this.getSetting();
-      this.getDeliveryFee();
+      this.auth = window.Laravel.isLoggedin;
+      if(window.Laravel.isLoggedin){
+          this.trayDefault();
+          this.userTray();
+          this.listShippingAddr();
+          this.userDefaultShip();
+          this.getSetting();
+          this.getDeliveryFee();
+      }
+   
       this.order.payment_mode = 1;
 
       const select = (el, all = false) => {
@@ -631,23 +637,46 @@ export default {
             }
         },
         saveShippingAddr(){
+          if(this.post.id > 0){
+              this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.btndis = true;
+                this.btncap = 'Saving ...';
+                this.$axios.put('api/shipping-address/'+this.post.id,this.post).then(res=>{
+                    this.post = {};
+                    this.btndis = false;
+                    this.btncap = 'Save';
+                    this.listShippingAddr();
+                    this.userDefaultShip();
+                    $('.shipping-address').modal('hide');
+                    $('.shipping-list').modal('show');
+                }).catch(err=>{
+                    this.btndis = false;
+                    this.btncap = 'Save';
+                    this.errors_ = err.response.data.errors
+                })
+
+            });
+          }else{
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
-            this.btndis = true;
-            this.btncap = 'Saving ...';
-            this.$axios.post('api/shipping-address',this.post).then(res=>{
-                this.post = {};
-                this.btndis = false;
-                this.btncap = 'Save';
-                this.listShippingAddr();
-                this.userDefaultShip();
-                $('.shipping-address').modal('hide');
-                $('.shipping-list').modal('show');
-            }).catch(err=>{
-                this.btndis = false;
-                this.btncap = 'Save';
-                this.errors_ = err.response.data.errors
-            })
-        });
+                this.btndis = true;
+                this.btncap = 'Saving ...';
+                this.$axios.post('api/shipping-address',this.post).then(res=>{
+                    this.post = {};
+                    this.btndis = false;
+                    this.btncap = 'Save';
+                    this.listShippingAddr();
+                    this.userDefaultShip();
+                    $('.shipping-address').modal('hide');
+                    $('.shipping-list').modal('show');
+                }).catch(err=>{
+                    this.btndis = false;
+                    this.btncap = 'Save';
+                    this.errors_ = err.response.data.errors
+                })
+
+            });
+          }
+         
 		    },
         listShippingAddr(){
           this.$axios.get('sanctum/csrf-cookie').then(response=>{
@@ -738,7 +767,30 @@ export default {
         deleteTray(){
           this.convertJsonString([]);
           this.trayDefault();
+        },
+        logout(){
+            this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('api/logout')
+                    .then(response => {
+                        if (response.data.success) {
+                            window.location.href = "/"
+                        } 
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            })
+        },
+        editShipAddress(data){
+            this.post = data;
+            $('.shipping-list').modal('hide');
+            $('.shipping-address').modal('show');
+        },
+        cancelButton(){
+          $('.confirmed-order').modal('hide');
         }
+
+        
     },
 }
 </script>
