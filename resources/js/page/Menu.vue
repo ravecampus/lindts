@@ -161,7 +161,6 @@ export default {
         },
 
         listOfProductWithFilter(filter){
-             
                 this.$axios.get('sanctum/csrf-cookie').then(response=>{
                 this.$axios.get('api/product-filter/'+filter,{params:this.dataset}).then(res=>{
                     this.products = res.data;
@@ -227,7 +226,6 @@ export default {
                     'description': data.description,
                     'food_category_id': data.food_category_id,
                     'price': data.price,
-                    'price': data.price,
                     'quantity': this.menu.qty,
                     'total': this.menu.total
                 };
@@ -244,7 +242,6 @@ export default {
                     'name': data.name,
                     'description': data.description,
                     'food_category_id': data.food_category_id,
-                    'price': data.price,
                     'price': data.price,
                     'quantity': this.menu.qty,
                     'total': this.menu.total
@@ -280,7 +277,8 @@ export default {
                     this.trays  = data;
                 });
             });
-        }
+        },
+        
 
 
     }

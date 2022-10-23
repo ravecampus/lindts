@@ -253,7 +253,6 @@ export default {
         // },
 
         listOfOrderAuth(url='api/order-auth'){
-             
                 this.$axios.get('sanctum/csrf-cookie').then(response=>{
                 this.tableData.draw ++;
                 this.$axios.get(url,{params:this.tableData}).then(res=>{
