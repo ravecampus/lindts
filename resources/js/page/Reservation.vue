@@ -95,6 +95,12 @@
                                                         </div>
                                                     </td>
                                                 </tr>
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <div class="text-right">TOTAL :</div>
+                                                    </td>
+                                                    <td colspan="2"><strong>{{ formatAmount(grandTotal(reserves)) }}</strong></td>
+                                                </tr>
                                             </tbody>
                                         </table>
 
@@ -228,7 +234,6 @@ export default {
                 this.btndis = true;
                 this.$axios.post('api/reservation-json', data).then(res=>{
                     this.btndis = false;
-                    this.$emit('show',{'message':'Menu has been added your order!', 'status':4});
                     $('.order-menu').modal('hide');
                 }).catch(err=>{
 
@@ -252,6 +257,7 @@ export default {
                     this.reserves[idx].quantity = result;      
                     this.reserves[idx].total = result + this.reserves[idx].price;      
                     this.convertJsonString(this.reserves);
+                    this.$emit('show',{'message':'Menu has been added your order!', 'status':4});
               }else{
                 this.product = {
                     'product_id': data.id,
@@ -264,8 +270,10 @@ export default {
                     'quantity': 1,
                     'total': data.price
                 };
+               
                 this.reserves.push(this.product);
                 this.convertJsonString(this.reserves);
+                this.$emit('show',{'message':'Menu has been added your order!', 'status':4});
 
               }
             }else{
@@ -281,8 +289,10 @@ export default {
                     'quantity': 1,
                     'total': data.price
                 };
+
                 this.reserves.push(this.product);
                 this.convertJsonString(this.reserves);
+                this.$emit('show',{'message':'Menu has been added your order!', 'status':4});
                
             }
         },
@@ -302,6 +312,39 @@ export default {
             let val = (num/1).toFixed(2).replace(',', '.')
             return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         },
+        minusQty(menu){
+            let result = (menu.quantity == 1) ? 1 : menu.quantity - 1;
+            let data = {'quantity': result};
+            let item = this.reserves.find(e =>e.product_id === menu.product_id);
+            let idx = this.reserves.indexOf(item);
+            this.reserves[idx].quantity = result;      
+            this.convertJsonString(this.reserves);
+          
+        },
+        addQty(menu){
+            let result = 0;
+            result = menu.quantity + 1;
+            let data = {'quantity': result};
+            let item = this.reserves.find(e =>e.product_id === menu.product_id);
+            let idx = this.reserves.indexOf(item);
+            this.reserves[idx].quantity = result;      
+            this.convertJsonString(this.reserves);
+        },
+        removeFromTray(id){
+            this.reserves.forEach((val, index)=>{
+                if(id == val.product_id){
+                    this.reserves.splice(index, 1);
+                }
+            });
+            this.convertJsonString(this.reserves);
+        },
+        grandTotal(data){
+            let ret = 0;
+            data.forEach((val, index) => {
+                ret += val.total;
+            });
+            return ret;
+        }
         
 
     },
@@ -309,6 +352,12 @@ export default {
         this.listOfProductWithFilter(0);
         this.listCategory();
         this.reservationJson();
+        
+        let user = window.Laravel.user;
+        this.post.full_name = ((user.first_name == null) ? "": user.first_name)+" "+((user.last_name == null) ? "" : user.last_name);
+        this.post.mobile_number = user.mobile_number;
+        
+        
     },
 }
 </script>
