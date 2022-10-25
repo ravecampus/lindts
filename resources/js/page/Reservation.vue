@@ -27,7 +27,7 @@
                         <h6 class="text-white">Menu</h6>
                      </div>
                      <div class="card-body">
-                        <div class="mb-3">
+                        <!-- <div> -->
                             <div class="row">
                                 <div class="col-md-4">
                                     <label class="small mb-1" >Number Of Person</label>
@@ -36,12 +36,14 @@
                                 </div>
                                 <div  class="col-md-4">
                                     <label class="small mb-1" >Reservation Date</label>
-                                    <input class="form-control" v-model="post.number_of_person" type="number" placeholder="Reservation Date">
+                                    <!-- <input class="form-control" v-model="post.number_of_person" type="number" placeholder="Reservation Date"> -->
+                                    <Datepicker v-model="post.reservation_date" placeholder="Reservation Date" :format="format"/>
                                     <span class="errors-material" v-if="errors.reservation_date">{{errors.reservation_date[0]}}</span>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="small mb-1" >Reservation Time</label>
-                                    <input class="form-control" v-model="post.number_of_person" type="number" placeholder="Reservation Time">
+                                     <Datepicker v-model="post.reservation_time" timePicker placeholder="Reservation Time" />
+                                    <!-- <input class="form-control" v-model="post.number_of_person" type="number" placeholder="Reservation Time"> -->
                                     <span class="errors-material" v-if="errors.reservation_time">{{errors.reservation_time[0]}}</span>
                                 </div>
                             </div>
@@ -88,7 +90,7 @@
                                                         </div>
                                                         
                                                     </td>
-                                                    <td>{{ formatAmount(list.total) }}</td>
+                                                    <td>{{ formatAmount((list.quantity * list.price)) }}</td>
                                                     <td>
                                                         <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                                             <a href="#!" @click="removeFromTray(list.product_id)" class="text-muted btn-qty"><i class="fas fa-times"></i></a>
@@ -109,7 +111,7 @@
                             </div>
 
                      </div>
-                 </div>
+                 <!-- </div> -->
             </div>
         </div>
 
@@ -185,7 +187,27 @@
 </template>
 
 <script>
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+
 export default {
+     components:{
+        Datepicker
+    },
+    setup() {
+        // In case of a range picker, you'll receive [Date, Date]
+        const format = (d) => {
+            const day =("0" + d.getDate()).slice(-2);
+            const month = ("0"+(d.getMonth()+1)).slice(-2);
+            const year =  d.getFullYear();
+
+            return  month+ "-" + day  + "-" + year;
+        }
+        
+        return {
+            format,
+        }
+    },
     data(){
         return{
             post:{},
@@ -341,7 +363,7 @@ export default {
         grandTotal(data){
             let ret = 0;
             data.forEach((val, index) => {
-                ret += val.total;
+                ret += val.quantity * val.price;
             });
             return ret;
         }
