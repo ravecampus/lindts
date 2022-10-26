@@ -51,7 +51,7 @@
                                 <label class="small mb-1" >Select our </label>
                                 <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-plus"></span> Menu</button>
                                 <div class="btn-group pull-right">
-                                    <button type="button" @click="saveReservation()" class="book-a-table-btn btn-sm-table"><span class="fa fa-send"></span> Book</button>
+                                    <button type="button" @click="saveReservation()" class="book-a-table-btn btn-sm-table"><span class="fa fa-send"></span> {{ btncap }}</button>
                                     <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> List of Booking</button>
                                 </div>
                             </div>
@@ -220,6 +220,7 @@ export default {
             categories:[],
             product:{},
             reserves:[],
+            btncap: "Book",
         }
     },
     methods:{
@@ -264,7 +265,6 @@ export default {
             });
         },
         addReserve(res){
-            console.log(res);
              let data = res;
 
             if(this.reserves.length > 0){
@@ -372,10 +372,17 @@ export default {
         },
         saveReservation(){
             this.post.menu = this.reserves;
+            this.post.total =this.grandTotal(this.reserves);
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.btncap = "Booking..."
                 this.$axios.post('api/reservation', this.post).then(res=>{
-
+                    this.$emit('show',{'message':'Reservation has been Booked!', 'status':4});
+                    this.convertJsonString([]);
+                    this.btncap = "Book";
+                    this.reservationJson();
+                    this.errors = [];
                 }).catch(err=>{
+                    this.btncap = "Book";
                     this.errors = err.response.data.errors
                 });
             });
