@@ -21,5 +21,9 @@ class ReservationItem extends Model
         'food_category_id',
         'status',
     ];
+
+    public function reserves(){
+        return $this->hasMany(ReservationItem::class, 'reservation_id', 'id');
+    }
    
 }

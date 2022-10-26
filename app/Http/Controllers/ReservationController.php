@@ -1,9 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Reservation;
 
 use Illuminate\Http\Request;
+use App\Models\Reservation;
+use Illuminate\Support\Facades\Auth;
+use App\Models\ReservationItem;
+
 
 class ReservationController extends Controller
 {
@@ -35,7 +38,46 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'full_name'=>'required|string',
+            'mobile_number'=>'required|regex:/(09)[0-9]{9}/',
+            'number_of_person'=>'required|numeric',
+            'reservation_date'=>'required',
+            // 'reservation_time'=>'required',
+            "menu" => "required",
+        ]);
+
+        $reserve = Reservation::create([
+            'user_id' => Auth::id(),
+            'full_name' => $request->full_name,
+            'mobile_number' => $request->mobile_number,
+            'number_of_person' => $request->mobile_number,
+            'reservation_date' => $request->reservation_date,
+            // 'reservation_time' => $request->reservation_time,
+            'total' => $request->total,
+            'status' => 0,
+        ]);
+
+        $reserve->reservation_number = str_pad($reserve->id, 6, "0", STR_PAD_LEFT);
+        $reserve->save();
+
+        $items = $request->menu;
+        foreach ($items as $key => $item) {
+           ReservationItem::create([
+            'image' => $item['image'],
+            'reservation_id' => $reserve->id,
+            'code' => $item['code'],
+            'product_id'=> $item['product_id'],
+            'name'=> $item['name'],
+            'description' => $item['description'],
+            'quantity' => $item['quantity'],
+            'price'=> $item['price'],
+            'food_category_id' => $item['food_category_id'],
+           ]);
+        }
+
+        return response()->json($reserve, 200);
+
     }
 
     /**

@@ -12,6 +12,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationJsonController;
+use App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,5 +64,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('user-password',[AuthController::class,'userPassword']);
 
     Route::resource('reservation-json',ReservationJsonController::class);
+    Route::resource('reservation',ReservationController::class);
     
 });

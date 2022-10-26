@@ -51,11 +51,12 @@
                                 <label class="small mb-1" >Select our </label>
                                 <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-plus"></span> Menu</button>
                                 <div class="btn-group pull-right">
-                                    <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-send"></span> Book</button>
+                                    <button type="button" @click="saveReservation()" class="book-a-table-btn btn-sm-table"><span class="fa fa-send"></span> Book</button>
                                     <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> List of Booking</button>
                                 </div>
                             </div>
                             <hr>
+                            <div v-if="errors.menu" ><span class="errors-material" >{{errors.menu[0]}}</span></div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <ul class="list-group">
@@ -90,7 +91,7 @@
                                                         </div>
                                                         
                                                     </td>
-                                                    <td>{{ formatAmount((list.quantity * list.price)) }}</td>
+                                                    <td>{{ formatAmount(list.total) }}</td>
                                                     <td>
                                                         <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                                             <a href="#!" @click="removeFromTray(list.product_id)" class="text-muted btn-qty"><i class="fas fa-times"></i></a>
@@ -339,7 +340,8 @@ export default {
             let data = {'quantity': result};
             let item = this.reserves.find(e =>e.product_id === menu.product_id);
             let idx = this.reserves.indexOf(item);
-            this.reserves[idx].quantity = result;      
+            this.reserves[idx].quantity = result;  
+            this.reserves[idx].total = result * menu.price;        
             this.convertJsonString(this.reserves);
           
         },
@@ -349,7 +351,8 @@ export default {
             let data = {'quantity': result};
             let item = this.reserves.find(e =>e.product_id === menu.product_id);
             let idx = this.reserves.indexOf(item);
-            this.reserves[idx].quantity = result;      
+            this.reserves[idx].quantity = result; 
+            this.reserves[idx].total = result * menu.price;        
             this.convertJsonString(this.reserves);
         },
         removeFromTray(id){
@@ -366,6 +369,16 @@ export default {
                 ret += val.quantity * val.price;
             });
             return ret;
+        },
+        saveReservation(){
+            this.post.menu = this.reserves;
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.$axios.post('api/reservation', this.post).then(res=>{
+
+                }).catch(err=>{
+                    this.errors = err.response.data.errors
+                });
+            });
         }
         
 
