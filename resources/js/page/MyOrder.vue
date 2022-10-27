@@ -180,11 +180,11 @@ export default {
         let sortOrders = {};
         let columns =[
         {label:'Order Number', name:'order_number'},
-        {label:'Total', name:'total'},
-        {label:'Delivery Fee', name:'delivery_fee'},
-        {label:'Grand Total', name:'Grand Total'},
+        {label:'Total', name:null},
+        {label:'Delivery Fee', name:null},
+        {label:'Grand Total', name:null},
         {label:'Items', name:null},
-        {label:'Status', name:'status'},
+        {label:'Status', name:null},
         {label:'Order Date', name:'created_at'},
         {label:' ', name:null},
         ];

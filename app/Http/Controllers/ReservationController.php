@@ -16,9 +16,25 @@ class ReservationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $columns = ['reservation_number',null,null,null,'reservation_date', 'reservation_time',null,'created_at'];
+        $length = $request->length;
+        $column = $request->column;
+        $dir = $request->dir;
+        $searchValue = $request->search;
+        $query = Reservation::with('reserves')->orderBy($columns[$column], $dir);
+    
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('full_name', 'like', '%'.$searchValue.'%')
+                ->orWhere('reservation_number', 'like', '%'.$searchValue.'%');
+                // ->orWhere('description', 'like', '%'.$searchValue.'%')
+                
+            });
+        }
+        $projects = $query->paginate($length);
+        return ['data'=>$projects, 'draw'=> $request->draw];
     }
 
     /**

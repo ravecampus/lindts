@@ -22,4 +22,7 @@ class Reservation extends Model
         'reservation_time',
         'status',
     ];
+    public function reserves(){
+        return $this->hasMany(ReservationItem::class, 'reservation_id', 'id');
+    }
 }

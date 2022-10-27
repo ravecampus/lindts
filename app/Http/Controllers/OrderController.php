@@ -166,7 +166,7 @@ class OrderController extends Controller
 
     public function authOrders(Request $request){
 
-        $columns = ['order_number','full_name', 'delivery_address', 'created_at'];
+        $columns = ['order_number',null,null,null,null,null, 'created_at'];
         $length = $request->length;
         $column = $request->column;
         $dir = $request->dir;

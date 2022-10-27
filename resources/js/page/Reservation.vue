@@ -52,7 +52,7 @@
                                 <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-plus"></span> Menu</button>
                                 <div class="btn-group pull-right">
                                     <button type="button" @click="saveReservation()" class="book-a-table-btn btn-sm-table"><span class="fa fa-send"></span> {{ btncap }}</button>
-                                    <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> List of Booking</button>
+                                    <button type="button" @click="showBooking()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> List of Booking</button>
                                 </div>
                             </div>
                             <hr>
@@ -184,6 +184,86 @@
             </div>
         </div>
 
+        
+        <div class="modal fade booking" ref="booking">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reservation List</h5>
+                    </div>
+                    <div class="modal-body">
+                        
+            <div class="row menu-container d-flex justify-content-center mt-2">
+                <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
+                    <tbody v-for="(list, idx) in bookings" :key="idx">
+                            <tr class="tr-shadow-2">
+                                <td>
+                                    {{ list.reservation_number }}
+                                </td>
+                                <td>
+                                    <div class="small" >
+                                        <div v-for="(ls,idx_) in list.reserves" :key="idx_">
+                                            {{ ls.name }}... &#8369;{{ formatAmount(ls.price) }},
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><span class="status--process">&#8369;{{ formatAmount(list.total) }}</span></td>
+                                <td class="desc">{{ list.number_of_person }}</td>
+                                <td>
+                                    <span>{{ formatDate(list.reservation_date) }}</span>
+                                </td>
+                                <td>
+                                    <span>{{ list.reservation_time }}</span>
+                                    <!-- <span>{{list.order_items }}</span> -->
+                                </td>
+                                <td>
+                                    <!-- <span class="text-danger">{{ setStatus(list) }}</span> -->
+                                </td>
+                                <td>
+                                    <span>{{formatDate(list.created_at) }}</span>
+                                </td>
+                                <td>
+                                    <!-- <div class="btn-group" v-if="list.status == 0 && list.payment_mode == 1">
+                                        <button class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top"  @click="payOrder(list)" title="Pay with Paypal">
+                                            Pay
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary" @click="showCancelOrder(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
+                                            Cancel
+                                        </button>
+                                    </div> -->
+                                </td>
+                            </tr>
+                            <tr class="spacer"></tr>
+                            
+                        </tbody>
+                    </data-table>
+                    <div class="col-md-12">
+                        <div class="pull-right">
+                            <pagination :pagination="pagination"
+                                @prev="listOfBookings(pagination.prevPageUrl)"
+                                @next="listOfBookings(pagination.nextPageUrl)"
+                                v-show="noData(bookings)">
+                            </pagination>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" v-show="!noData(bookings)">
+                <div class="card-body">
+                    <div class="text-center">No Orders Found!</div>
+                </div>
+            </div>
+
+
+            </div>
+            <div class="modal-footer text-center">
+                <div class="row">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     </div>
 </template>
 
@@ -191,9 +271,14 @@
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
+import DataTable from '../table/DataTable'
+import PaginationVue from '../table/Pagination';
+
 export default {
      components:{
-        Datepicker
+        Datepicker,
+        dataTable:DataTable,
+        pagination:PaginationVue
     },
     setup() {
         // In case of a range picker, you'll receive [Date, Date]
@@ -210,6 +295,23 @@ export default {
         }
     },
     data(){
+
+        let sortOrders = {};
+        let columns =[
+        {label:'Reservation Number', name:'reservation_number'},
+        {label:'Menu', name:null},
+        {label:'Total', name:null},
+        {label:'Number of Person', name:null},
+        {label:'Reservation Date', name:'reservation_date'},
+        {label:'Reservation Time', name:'reservation_time'},
+        {label:'Status', name:null},
+        {label:'Request Date', name:'created_at'},
+        // {label:' ', name:null},
+        ];
+        
+        columns.forEach(column=>{
+            sortOrders[column.name] = -1;
+        });
         return{
             post:{},
             errors:[],
@@ -221,6 +323,30 @@ export default {
             product:{},
             reserves:[],
             btncap: "Book",
+            bookings:[],
+            columns:columns,
+            sortOrders:sortOrders,
+            sortKey:'created_at',
+            btndis: false,
+            tableData:{
+                draw:0,
+                length:10,
+                search:'',
+                column:0,
+                archive:0,
+                dir:'desc',
+                filter:0,
+            },
+            pagination:{
+                lastPage:'',
+                currentPage:'',
+                total:'',
+                lastPageUrl:'',
+                nextPageurl:'',
+                prevPageUrl:'',
+                from:'',
+                to:''
+            },
         }
     },
     methods:{
@@ -386,6 +512,61 @@ export default {
                     this.errors = err.response.data.errors
                 });
             });
+        },
+        
+        listOfBookings(url='api/reservation'){
+                this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.tableData.draw ++;
+                this.$axios.get(url,{params:this.tableData}).then(res=>{
+                    let data = res.data;
+                    if(this.tableData.draw == data.draw){
+                        this.bookings = data.data.data;
+                        this.configPagination(data.data);
+                    }else{
+                        this.not_found = true;
+                    }
+                });
+            });
+        },
+        configPagination(data){
+            this.pagination.lastPage = data.last_page;
+            this.pagination.currentPage = data.current_page;
+            this.pagination.total = data.total;
+            this.pagination.lastPageUrl = data.last_page_url;
+            this.pagination.nextPageUrl = data.next_page_url;
+            this.pagination.prevPageUrl = data.prev_page_url;
+            this.pagination.from = data.from;
+            this.pagination.to = data.to;
+        },
+        sortBy(key){
+            if(key != null){
+                this.sortKey = key;
+                this.sortOrders[key] = this.sortOrders[key] * -1;
+                this.tableData.column = this.getIndex(this.columns, 'name', key);
+                this.tableData.dir = this.sortOrders[key] === 1 ? 'asc' : 'desc';
+                this.listOfBookings();
+            }
+        },
+        getIndex(array, key, value){
+            return array.findIndex(i=>i[key] == value)
+        },
+        noData(data){
+            return data == undefined ? true : (data.length > 0) ? true : false;
+        },
+        
+        formatAmount(num){
+            let val = (num/1).toFixed(2).replace(',', '.')
+            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        },
+        formatDate(da){
+            let d = new Date(da);
+            const day =("0" + d.getDate()).slice(-2);
+            const month = ("0"+(d.getMonth()+1)).slice(-2);
+            const year =  d.getFullYear();
+            return  month+ "-" + day  + "-" + year;
+        },
+        showBooking(){
+            $('.booking').modal('show');
         }
         
 
@@ -394,12 +575,12 @@ export default {
         this.listOfProductWithFilter(0);
         this.listCategory();
         this.reservationJson();
+        this.listOfBookings();
         
         let user = window.Laravel.user;
         this.post.full_name = ((user.first_name == null) ? "": user.first_name)+" "+((user.last_name == null) ? "" : user.last_name);
         this.post.mobile_number = user.mobile_number;
-        
-        
+    
     },
 }
 </script>
