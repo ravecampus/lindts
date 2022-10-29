@@ -21,22 +21,9 @@
                 <div class="container-fluid">
                     <ul class="navbar-mobile__list list-unstyled">
                         <li class="has-sub">
-                            <a class="js-arrow" href="#">
-                                <i class="fas fa-tachometer-alt"></i>Dashboard</a>
-                            <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
-                                <li>
-                                    <a href="index.html">Dashboard 1</a>
-                                </li>
-                                <li>
-                                    <a href="index2.html">Dashboard 2</a>
-                                </li>
-                                <li>
-                                    <a href="index3.html">Dashboard 3</a>
-                                </li>
-                                <li>
-                                    <a href="index4.html">Dashboard 4</a>
-                                </li>
-                            </ul>
+                            <router-link :to="{name:'admindashboard'}">
+                                <i class="fas fa-tachometer-alt"></i>Dashboard</router-link>
+                           
                         </li>
                         <li>
                             <router-link :to="{name:'food_category'}">
@@ -47,16 +34,16 @@
                                 <i class="fas fa-pencil-square"></i>Products</router-link>
                         </li>
                         <li>
-                            <a href="form.html">
-                                <i class="far fa-check-square"></i>Forms</a>
+                            <router-link :to="{name:'adminorder'}">
+                                <i class="far fa-check-square"></i>Orders</router-link>
                         </li>
                         <li>
                             <a href="calendar.html">
-                                <i class="fas fa-calendar-alt"></i>Calendar</a>
+                                <i class="fas fa-calendar-alt"></i>Reservations</a>
                         </li>
                         <li>
                             <a href="map.html">
-                                <i class="fas fa-map-marker-alt"></i>Maps</a>
+                                <i class="fas fa-users"></i>Users</a>
                         </li>
                         <li class="has-sub">
                             <a class="js-arrow" href="#">
@@ -128,23 +115,9 @@
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
                     <ul class="list-unstyled navbar__list">
-                        <li class="active has-sub">
-                            <a class="js-arrow" href="#">
-                                <i class="fas fa-tachometer-alt"></i>Dashboard</a>
-                            <ul class="list-unstyled navbar__sub-list js-sub-list">
-                                <li>
-                                    <a href="index.html">Dashboard 1555</a>
-                                </li>
-                                <li>
-                                    <a href="index2.html">Dashboard 2</a>
-                                </li>
-                                <li>
-                                    <a href="index3.html">Dashboard 3</a>
-                                </li>
-                                <li>
-                                    <a href="index4.html">Dashboard 4</a>
-                                </li>
-                            </ul>
+                        <li class="has-sub">
+                            <router-link :to="{name:'admindashboard'}">
+                                <i class="fas fa-tachometer-alt"></i>Dashboard</router-link>
                         </li>
                         <li>
                             <router-link :to="{name:'food_category'}">
@@ -156,16 +129,16 @@
                                 <i class="fas fa-pencil-square"></i>Products</router-link>
                         </li>
                         <li>
-                            <a href="form.html">
-                                <i class="far fa-check-square"></i>Forms</a>
+                            <router-link :to="{name:'adminorder'}">
+                                <i class="far fa-check-square"></i>Orders</router-link>
                         </li>
                         <li>
                             <a href="calendar.html">
-                                <i class="fas fa-calendar-alt"></i>Calendar</a>
+                                <i class="fas fa-calendar-alt"></i>Reservations</a>
                         </li>
                         <li>
                             <a href="map.html">
-                                <i class="fas fa-map-marker-alt"></i>Maps</a>
+                                <i class="fas fa-users"></i>Users</a>
                         </li>
                         <li class="has-sub">
                             <a class="js-arrow" href="#">
@@ -421,7 +394,7 @@ export default {
         flashmessage: FlashMessage,
     },
     mounted() {
-    
+        // this.$router.push({name:"admindashboard"});
         try {
             var menu = $('.js-item-menu');
             var sub_menu_is_showed = -1;

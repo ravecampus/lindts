@@ -76,10 +76,15 @@ export default {
                 this.btn_txt = "Accessing..."
                 this.btn_dis = true;
                 this.$axios.post('api/signin', this.post).then(res=>{
-                    console.log(res.data)
                     this.btn_txt = "sign in"
                     this.btn_dis = false;
-                    // window.location.href="/"
+                    let data = res.data;
+                    if(data.role == 1){
+                        window.location.href="/admin"
+                    }else{
+                        window.location.href="/"
+                    }
+                  
                 }).catch(err=>{
                     this.btn_dis = false;
                     this.btn_txt = "sign in"
@@ -90,7 +95,18 @@ export default {
         linkSignup(){
             this.$router.push({name:'signup'});
         }
-    }
+    },
+    mounted() {
+        if(window.Laravel.isLoggedin){
+            let user = window.Laravel.user;
+            this.auth = true;
+            if(user.role == 1){
+                this.$router.push({name:'admin'})
+            }else {
+               this.$router.push({name:'dashboard'})
+            }
+        }
+    },
 }
 </script>
 

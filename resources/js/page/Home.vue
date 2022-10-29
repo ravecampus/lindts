@@ -349,6 +349,16 @@ export default {
           this.getSetting();
           this.getDeliveryFee();
       }
+
+      if(window.Laravel.isLoggedin){
+          let user = window.Laravel.user;
+          this.auth = true;
+          if(user.role == 1){
+              this.$router.push({name:'admin'})
+          }else if(user.role == 0){
+          //    this.$router.push({name:'user'})
+          }
+      }
    
       this.order.payment_mode = 1;
 

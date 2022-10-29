@@ -2,6 +2,8 @@ import {createWebHistory, createRouter} from "vue-router";
 import Home from '../page/Home';
 import Menu from '../page/Menu';
 import Payment from '../page/Payment';
+import PaymentReserve from '../page/PaymentReserve';
+import PaymentReserveSuccess from '../page/PaymentReserveSuccess';
 import PaymentSuccess from '../page/PaymentSuccess';
 import Myorder from '../page/MyOrder';
 import MyProfile from '../page/MyProfile';
@@ -11,9 +13,11 @@ import Dashboard from '../page/Dashboard';
 import Signup from '../page/Signup';
 import Signin from '../page/Signin';
 import Admin from '../admin/Main';
+import Adashboard from '../admin/AdminDashboard';
 import FoodCategory from '../admin/FoodCategory';
 import Products from '../admin/Product';
 import Settings from '../admin/Setting';
+import AdminOrder from '../admin/AdminOrder';
 
 
 export const routes = [
@@ -62,7 +66,17 @@ export const routes = [
                 name:'reservation',
                 component:Reservation
             },
-            
+            {
+                path:'payment-reserve',
+                name:'payreserve',
+                component:PaymentReserve
+            },
+            {
+                path:'payreserve-success',
+                name:'payreservesuccess',
+                component:PaymentReserveSuccess
+            },
+           
         ]
 
     },
@@ -82,19 +96,29 @@ export const routes = [
         component: Admin,
         children:[
             {
-                path:'food-category',
+                path:'',
+                name:'admindashboard',
+                component: Adashboard  
+            },
+            {
+                path:'/food-category',
                 name:'food_category',
                 component: FoodCategory  
             },
             {
-                path:'products',
+                path:'/products',
                 name:'products',
                 component: Products  
             },
             {
-                path:'settings',
+                path:'/settings',
                 name:'settings',
                 component: Settings  
+            },
+            {
+                path:'/orders',
+                name:'adminorder',
+                component: AdminOrder  
             }
         ]
     }
@@ -117,7 +141,9 @@ const openRoutes = [
     'slip',
     'myorder',
     'myprofile',
-    'reservation'
+    'reservation',
+    'payreserve',
+    'payreservesuccess'
    
 ];
 
@@ -129,7 +155,9 @@ const adminRoutes = [
     'admin',
     'food_category',
     'products',
-    'settings'
+    'settings',
+    'admindashboard',
+    'adminorder'
     
 ];
 

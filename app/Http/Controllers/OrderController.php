@@ -14,9 +14,29 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $columns = ['order_number',null,null,null,null,null, 'created_at'];
+        $length = $request->length;
+        $column = $request->column;
+        $dir = $request->dir;
+        $filter = $request->filter;
+        $searchValue = $request->search;
+        if($filter == 0){
+            $query = Order::with('order_items')->where('status', '!=', 0)->orderBy($columns[$column], $dir);
+        }else{
+            $query = Order::with('order_items')->where('status', '!=', 0)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
+        }
+            
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('order_number', 'like', '%'.$searchValue.'%')
+                ->orWhere('full_name', 'like', '%'.$searchValue.'%');
+            });
+        }
+       
+        $projects = $query->paginate($length);
+        return ['data'=>$projects, 'draw'=> $request->draw];
     }
 
     /**

@@ -4,7 +4,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <h4>Settings</h4>
+                        <h4>Setting</h4>
                         <div class="card">
                             <div class="card-body">
                                 <h6>Contact and Schedule</h6>

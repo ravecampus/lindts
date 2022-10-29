@@ -15,7 +15,7 @@ class ShippingAddressController extends Controller
      */
     public function index()
     {
-        $ship = ShippingAddress::all();
+        $ship = ShippingAddress::where('user_id', Auth::id())->get();
         return response()->json($ship, 200);
         
     }

@@ -23,7 +23,14 @@ class ReservationController extends Controller
         $column = $request->column;
         $dir = $request->dir;
         $searchValue = $request->search;
-        $query = Reservation::with('reserves')->orderBy($columns[$column], $dir);
+        $filter = $request->filter;
+
+        if($filter == 0){
+            $query = Reservation::with('reserves')->where('status','!=', 3)->where('user_id', Auth::id())->orderBy($columns[$column], $dir);
+        }else{
+            $query = Reservation::with('reserves')->where('status', 3)->where('user_id', Auth::id())->orderBy($columns[$column], $dir);
+        }
+       
     
         if($searchValue){
             $query->where(function($query) use ($searchValue){
@@ -141,5 +148,11 @@ class ReservationController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function reservePayment(Request $request){
+        $id = Auth::id();
+        $order = Reservation::where('user_id', $id)->where('status',0)->where('reservation_number', $request->reservation_number)->first();
+        return response()->json($order, 200);
     }
 }

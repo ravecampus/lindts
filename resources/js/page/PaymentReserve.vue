@@ -14,29 +14,29 @@
                         <h4>Paypal</h4>
                     </div>
                     <!-- Paypal info -->
-                    <div id="paypal" class="pt-3" v-if="order.id != undefined" >
-                        <h6 class="pb-2">Order #: {{ order.order_number}}</h6>
+                    <div id="paypal" class="pt-3" v-if="reserve.id != undefined" >
+                        <h6 class="pb-2">Order #: {{ reserve.reserve_number}}</h6>
                         <div class="form-group "> 
                              <label class="radio-inline">
-                                 Name / Address : <strong>{{ order.full_name }} / {{ order.delivery_address}} </strong>
+                                 Name / MObile # : <strong>{{ reserve.full_name }} / {{ reserve.mobile_number}} </strong>
                              </label> 
                         </div>
                         <div class="form-group "> 
                              <label class="radio-inline">
-                                 Amount : <strong>&#8369; {{ formatAmount(order.total) }}</strong>
+                                 Amount : <strong>&#8369; {{ formatAmount(reserve.total) }}</strong>
                              </label> 
                         </div>
-                        <div class="form-group "> 
+                        <!-- <div class="form-group "> 
                              <label class="radio-inline"> 
-                                Delivery Fee : <strong>&#8369; {{ formatAmount(order.delivery_fee) }}</strong>
+                                Delivery Fee : <strong>&#8369; {{ formatAmount(reserve.delivery_fee) }}</strong>
                              </label>
-                        </div>
-                        <div class="form-group "> 
+                        </div> -->
+                        <!-- <div class="form-group "> 
                              <label class="radio-inline"> 
-                                Total Amount :  <strong>&#8369; {{ formatAmount(order.grand_total) }}</strong>
+                                Total Amount :  <strong>&#8369; {{ formatAmount(reserve.grand_total) }}</strong>
                              </label>
-                        </div>
-                        <p> <button v-if="order.id != undefined" type="button" @click="payByPaypal" class="book-a-table-btn "><i class="fab fa-paypal mr-2"></i>{{ btn_cap }}</button> </p>
+                        </div> -->
+                        <p> <button v-if="reserve.id != undefined" type="button" @click="payByPaypal" class="book-a-table-btn "><i class="fab fa-paypal mr-2"></i>{{ btn_cap }}</button> </p>
                         <hr>
                         <p class="text-muted"> Note: After clicking on the button, you will be directed to a secure gateway for payment. After completing the payment process, you will be redirected back to the website to view details of your order. </p>
                     </div> <!-- End -->
@@ -52,7 +52,7 @@
 export default {
     data(){
         return {
-            order:{},
+            reserve:{},
             post:{},
             btn_cap:'Log into my Paypal'
         }
@@ -63,18 +63,18 @@ export default {
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
                 this.btn_cap = "Proccessing..."
                 this.btndis = true;
-                this.post = this.order;
-                this.$axios.post('api/paypal/charges', this.post).then(res=>{
+                this.post = this.reserve;
+                this.$axios.post('api/payreserve', this.post).then(res=>{
                     this.btn_cap = "Log into my Paypal"
                     this.btndis = false;
                     window.location.href = res.data;
                 });
             });
         },
-        getOrderByPayment(id){
+        getReserveByPayment(id){
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.$axios.get('api/order-payment',{params:{'order_number':id}}).then(res=>{
-                    this.order = res.data;
+                this.$axios.get('api/reserve-payment',{params:{'reservation_number':id}}).then(res=>{
+                    this.reserve = res.data;
                 });
             });
         },
@@ -85,8 +85,8 @@ export default {
         },
     },
     mounted() {
-        let id = this.$route.query.order;
-        this.getOrderByPayment(id);
+        let id = this.$route.query.reserve;
+        this.getReserveByPayment(id);
     },
 }
 </script>

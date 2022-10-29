@@ -28,35 +28,39 @@
                      </div>
                      <div class="card-body">
                         <!-- <div> -->
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label class="small mb-1" >Number Of Person</label>
+                            <!-- <div class="row"> -->
+                                <div class="form-group">
+                                    <label class="small" >Number Of Person</label>
                                     <input class="form-control" v-model="post.number_of_person" type="number" placeholder="Number of Person">
                                     <span class="errors-material" v-if="errors.number_of_person">{{errors.number_of_person[0]}}</span>
                                 </div>
-                                <div  class="col-md-4">
-                                    <label class="small mb-1" >Reservation Date</label>
+                                <div  class="form-group">
+                                    <label class="small" >Reservation Date</label>
                                     <!-- <input class="form-control" v-model="post.number_of_person" type="number" placeholder="Reservation Date"> -->
                                     <Datepicker v-model="post.reservation_date" placeholder="Reservation Date" :format="format"/>
                                     <span class="errors-material" v-if="errors.reservation_date">{{errors.reservation_date[0]}}</span>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="small mb-1" >Reservation Time</label>
+                                <div class="form-group">
+                                    <label class="small" >Reservation Time</label>
                                      <Datepicker v-model="post.reservation_time" timePicker placeholder="Reservation Time" />
                                     <!-- <input class="form-control" v-model="post.number_of_person" type="number" placeholder="Reservation Time"> -->
                                     <span class="errors-material" v-if="errors.reservation_time">{{errors.reservation_time[0]}}</span>
                                 </div>
-                            </div>
-                                <hr>
-                                <label class="small mb-1" >Select our </label>
-                                <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-plus"></span> Menu</button>
-                                <div class="btn-group pull-right">
-                                    <button type="button" @click="saveReservation()" class="book-a-table-btn btn-sm-table"><span class="fa fa-send"></span> {{ btncap }}</button>
-                                    <button type="button" @click="showBooking()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> List of Booking</button>
+                            <!-- </div> -->
+                            <hr>
+                            <div class="row">
+                                <div>
+                                    <label class="small mb-1" >Select our </label>
+                                    <button type="button" @click="showMenu()" class="book-a-table-btn btn-sm-table"><span class="fa fa-plus"></span> Menu</button>
+                                    <div class="btn-group pull-right">
+                                        <button type="button" @click="saveReservation()" class="book-a-table-btn btn-sm-table"><span class="fa fa-send"></span> {{ btncap }}</button>
+                                        <button type="button" @click="showBooking()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> List of Booking</button>
+                                        <button type="button" @click="showHistory()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> History</button>
+                                    </div>
                                 </div>
                             </div>
-                            <hr>
                             <div v-if="errors.menu" ><span class="errors-material" >{{errors.menu[0]}}</span></div>
+                            <hr>
                             <div class="row">
                                 <div class="col-md-12">
                                     <ul class="list-group">
@@ -110,7 +114,7 @@
                                     </ul>
                                 </div>
                             </div>
-
+                        </div>
                      </div>
                  <!-- </div> -->
             </div>
@@ -185,84 +189,161 @@
         </div>
 
         
-        <div class="modal fade booking" ref="booking">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Reservation List</h5>
+            <div class="modal fade booking" ref="booking">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Reservation List</h5>
+                        </div>
+                        <div class="modal-body">
+                            
+                        <div class="row menu-container d-flex justify-content-center mt-2">
+                            <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
+                                <tbody v-for="(list, idx) in bookings" :key="idx">
+                                        <tr class="tr-shadow-2">
+                                            <td>
+                                                {{ list.reservation_number }}
+                                            </td>
+                                            <td>
+                                                <div class="small" >
+                                                    <li v-for="(ls,idx_) in list.reserves" :key="idx_">
+                                                        {{ ls.name }} (&#8369;{{ formatAmount(ls.price) }} x {{ ls.quantity }}),
+                                                    </li>
+                                                </div>
+                                            </td>
+
+                                            <td><span class="status--process">&#8369;{{ formatAmount(list.total) }}</span></td>
+                                            <td class="desc">{{ list.number_of_person }}</td>
+                                            <td>
+                                                <span>{{ formatDate(list.reservation_date) }}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{ list.reservation_time }}</span>
+                                                <!-- <span>{{list.order_items }}</span> -->
+                                            </td>
+                                            <td>
+                                                <span class="text-danger">{{ setStatus(list.status) }}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{formatDate(list.created_at) }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" v-if="list.status == 0">
+                                                    <button class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top"  @click="payReserve(list)" title="Pay with Paypal">
+                                                        Pay
+                                                    </button>
+                                                    <button class="btn btn-sm btn-secondary" @click="showCancelOrder(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="spacer"></tr>
+                                        
+                                    </tbody>
+                                </data-table>
+                                <div class="col-md-12">
+                                    <div class="pull-right">
+                                        <pagination :pagination="pagination"
+                                            @prev="listOfBookings(pagination.prevPageUrl)"
+                                            @next="listOfBookings(pagination.nextPageUrl)"
+                                            v-show="noData(bookings)">
+                                        </pagination>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="card" v-show="!noData(bookings)">
+                    <div class="card-body">
+                        <div class="text-center">No Orders Found!</div>
                     </div>
-                    <div class="modal-body">
-                        
-            <div class="row menu-container d-flex justify-content-center mt-2">
-                <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
-                    <tbody v-for="(list, idx) in bookings" :key="idx">
-                            <tr class="tr-shadow-2">
-                                <td>
-                                    {{ list.reservation_number }}
-                                </td>
-                                <td>
-                                    <div class="small" >
-                                        <div v-for="(ls,idx_) in list.reserves" :key="idx_">
-                                            {{ ls.name }}... &#8369;{{ formatAmount(ls.price) }},
+                </div>
+
+
+                </div>
+                <div class="modal-footer text-center">
+                    <div class="row">
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+
+            <div class="modal fade history" ref="history">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">History</h5>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <div class="row menu-container d-flex justify-content-center mt-2">
+                                <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
+                                    <tbody v-for="(list, idx) in bookings" :key="idx">
+                                            <tr class="tr-shadow-2">
+                                                <td>
+                                                    {{ list.reservation_number }}
+                                                </td>
+                                                <td>
+                                                    <div class="small" >
+                                                        <li v-for="(ls,idx_) in list.reserves" :key="idx_">
+                                                            {{ ls.name }} (&#8369;{{ formatAmount(ls.price) }} x {{ ls.quantity }}),
+                                                        </li>
+                                                    </div>
+                                                </td>
+
+                                                <td><span class="status--process">&#8369;{{ formatAmount(list.total) }}</span></td>
+                                                <td class="desc">{{ list.number_of_person }}</td>
+                                                <td>
+                                                    <span>{{ formatDate(list.reservation_date) }}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{ list.reservation_time }}</span>
+                                                    <!-- <span>{{list.order_items }}</span> -->
+                                                </td>
+                                                <td>
+                                                    <span class="text-danger">{{ setStatus(list.status) }}</span>
+                                                </td>
+                                                <td>
+                                                    <span>{{formatDate(list.created_at) }}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" v-if="list.status == 0">
+                                                        <button class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top"  @click="payReserve(list)" title="Pay with Paypal">
+                                                            Pay
+                                                        </button>
+                                                        <button class="btn btn-sm btn-secondary" @click="showCancelOrder(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="spacer"></tr>
+                                            
+                                        </tbody>
+                                    </data-table>
+                                    <div class="col-md-12">
+                                        <div class="pull-right">
+                                            <pagination :pagination="pagination"
+                                                @prev="listOfBookings(pagination.prevPageUrl)"
+                                                @next="listOfBookings(pagination.nextPageUrl)"
+                                                v-show="noData(bookings)">
+                                            </pagination>
                                         </div>
                                     </div>
-                                </td>
-
-                                <td><span class="status--process">&#8369;{{ formatAmount(list.total) }}</span></td>
-                                <td class="desc">{{ list.number_of_person }}</td>
-                                <td>
-                                    <span>{{ formatDate(list.reservation_date) }}</span>
-                                </td>
-                                <td>
-                                    <span>{{ list.reservation_time }}</span>
-                                    <!-- <span>{{list.order_items }}</span> -->
-                                </td>
-                                <td>
-                                    <!-- <span class="text-danger">{{ setStatus(list) }}</span> -->
-                                </td>
-                                <td>
-                                    <span>{{formatDate(list.created_at) }}</span>
-                                </td>
-                                <td>
-                                    <!-- <div class="btn-group" v-if="list.status == 0 && list.payment_mode == 1">
-                                        <button class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top"  @click="payOrder(list)" title="Pay with Paypal">
-                                            Pay
-                                        </button>
-                                        <button class="btn btn-sm btn-secondary" @click="showCancelOrder(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
-                                            Cancel
-                                        </button>
-                                    </div> -->
-                                </td>
-                            </tr>
-                            <tr class="spacer"></tr>
-                            
-                        </tbody>
-                    </data-table>
-                    <div class="col-md-12">
-                        <div class="pull-right">
-                            <pagination :pagination="pagination"
-                                @prev="listOfBookings(pagination.prevPageUrl)"
-                                @next="listOfBookings(pagination.nextPageUrl)"
-                                v-show="noData(bookings)">
-                            </pagination>
+                                </div>
+                            <div class="card" v-show="!noData(bookings)">
+                        <div class="card-body">
+                            <div class="text-center">No Orders Found!</div>
                         </div>
                     </div>
                 </div>
-                <div class="card" v-show="!noData(bookings)">
-                <div class="card-body">
-                    <div class="text-center">No Orders Found!</div>
+                        <div class="modal-footer text-center">
+                            <div class="row">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-
-            </div>
-            <div class="modal-footer text-center">
-                <div class="row">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
     </div>
 </template>
@@ -507,6 +588,8 @@ export default {
                     this.btncap = "Book";
                     this.reservationJson();
                     this.errors = [];
+                    this.listOfBookings();
+                    $('.booking').modal('show');
                 }).catch(err=>{
                     this.btncap = "Book";
                     this.errors = err.response.data.errors
@@ -566,9 +649,22 @@ export default {
             return  month+ "-" + day  + "-" + year;
         },
         showBooking(){
+            this.tableData.filter = 0;
+            this.listOfBookings();
             $('.booking').modal('show');
+        },
+        setStatus(num){
+            return num == 0 ? "Received" : num == 1 ? "Confirmed" :  num == 2 ? "Approved" :num == 3? "Served" :"";
+        },
+        payReserve(data){
+            $('.booking').modal('hide');
+            this.$router.push({name:'payreserve', query:{'reserve':data.reservation_number}});
+        },
+        showHistory(){
+            this.tableData.filter = 1;
+            this.listOfBookings();
+            $('.history').modal('show');
         }
-        
 
     },
     mounted() {
