@@ -37,7 +37,6 @@ class ReservationController extends Controller
                 $query->where('full_name', 'like', '%'.$searchValue.'%')
                 ->orWhere('reservation_number', 'like', '%'.$searchValue.'%');
                 // ->orWhere('description', 'like', '%'.$searchValue.'%')
-                
             });
         }
         $projects = $query->paginate($length);
@@ -162,5 +161,32 @@ class ReservationController extends Controller
         $order->save();
 
         return response()->json($order, 200);
+    }
+
+    public function listReservation(Request $request){
+        $columns = ['reservation_number',null,null,null,'reservation_date', 'reservation_time',null,'created_at'];
+        $length = $request->length;
+        $column = $request->column;
+        $dir = $request->dir;
+        $searchValue = $request->search;
+        $filter = $request->filter;
+
+        if($filter == 1){
+            $query = Reservation::with('reserves')->where('status','!=', 3)->where('status','!=', 5)->orderBy($columns[$column], $dir);
+        }else if($filter == 2){
+            $query = Reservation::with('reserves')->where('status', 3)->orderBy($columns[$column], $dir);
+        }
+       
+    
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('full_name', 'like', '%'.$searchValue.'%')
+                ->orWhere('reservation_number', 'like', '%'.$searchValue.'%');
+                // ->orWhere('description', 'like', '%'.$searchValue.'%')
+                
+            });
+        }
+        $projects = $query->paginate($length);
+        return ['data'=>$projects, 'draw'=> $request->draw];
     }
 }

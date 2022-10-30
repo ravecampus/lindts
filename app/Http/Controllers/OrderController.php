@@ -26,6 +26,8 @@ class OrderController extends Controller
             $query = Order::with('order_items')->where('status', '!=', 4)->where('status', '!=', 5)->where('status', '!=', 0)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
         }else if($filter == 2){
             $query = Order::with('order_items')->where('status', '!=', 4)->where('status', '!=', 5)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
+        }else if($filter == 3){
+            $query = Order::with('order_items')->where('status', 4)->orderBy($columns[$column], $dir);
         }
             
         if($searchValue){

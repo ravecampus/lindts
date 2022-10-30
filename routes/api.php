@@ -68,7 +68,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::resource('reservation-json',ReservationJsonController::class);
     Route::get('reserve-payment',[ReservationController::class, 'reservePayment']);
+    Route::get('reserve-list',[ReservationController::class, 'listReservation']);
     Route::resource('reservation',ReservationController::class);
-    Route::post('reserve-status',[ReservationController::class,'setReserveStatus']);
+    Route::post('reserve-status',[ReservationController::class,'setReserveStatus']); 
     
 });

@@ -200,7 +200,7 @@
                         <div class="row menu-container d-flex justify-content-center mt-2">
                             <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
                                 <tbody v-for="(list, idx) in bookings" :key="idx">
-                                        <tr class="tr-shadow-2">
+                                        <tr class="tr-shadow">
                                             <td>
                                                 {{ list.reservation_number }}
                                             </td>
@@ -236,6 +236,9 @@
                                                         Cancel
                                                     </button>
                                                 </div>
+                                                <button v-if="list.status == 2" class="btn btn-sm btn-primary" @click="finished(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
+                                                        Finished
+                                                </button>
                                             </td>
                                         </tr>
                                         <tr class="spacer"></tr>
@@ -252,9 +255,9 @@
                                     </div>
                                 </div>
                             </div>
-                        <div class="card" v-show="!noData(bookings)">
+                <div class="card" v-show="!noData(bookings)">
                     <div class="card-body">
-                        <div class="text-center">No Orders Found!</div>
+                        <div class="text-center">No Reservation Found!</div>
                     </div>
                 </div>
 
@@ -272,14 +275,14 @@
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">History</h5>
+                            <h5 class="modal-title">History & Canceled</h5>
                         </div>
                         <div class="modal-body">
                             
                             <div class="row menu-container d-flex justify-content-center mt-2">
                                 <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
                                     <tbody v-for="(list, idx) in bookings" :key="idx">
-                                            <tr class="tr-shadow-2">
+                                            <tr class="tr-shadow">
                                                 <td>
                                                     {{ list.reservation_number }}
                                                 </td>
@@ -333,7 +336,7 @@
                                 </div>
                             <div class="card" v-show="!noData(bookings)">
                         <div class="card-body">
-                            <div class="text-center">No Orders Found!</div>
+                            <div class="text-center">No Reservation Found!</div>
                         </div>
                     </div>
                 </div>
@@ -670,6 +673,7 @@ export default {
             return  month+ "-" + day  + "-" + year;
         },
         showBooking(){
+            this.bookings = [];
             this.tableData.filter = 0;
             this.listOfBookings();
             $('.booking').modal('show');
@@ -682,6 +686,7 @@ export default {
             this.$router.push({name:'payreserve', query:{'reserve':data.reservation_number}});
         },
         showHistory(){
+            this.bookings = [];
             this.tableData.filter = 1;
             this.listOfBookings();
             $('.history').modal('show');
@@ -696,6 +701,18 @@ export default {
                     .then(response => {
                         this.listOfBookings();
                         $('.cancel-reserve').modal('hide');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            })
+        },
+        finished(data){
+            this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('api/reserve-status', {'status':3,'id':data.id})
+                    .then(response => {
+                        this.listOfBookings();
+                        // $('.cancel-reserve').modal('hide');
                     })
                     .catch(function (error) {
                         console.error(error);

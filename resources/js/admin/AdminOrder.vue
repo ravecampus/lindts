@@ -9,21 +9,22 @@
                     <div class="table-data__tool">
                         <div class="table-data__tool-left">
                             <div class="rs-select2--light rs-select2--lg">
-                                   <input class="au-input au-input--full w-100" type="text" v-model="tableData.search"  placeholder="Search ..." @input="listProduct()">
+                                   <input class="au-input au-input--full w-100" type="text" v-model="tableData.search"  placeholder="Order # ..." @input="listOfOrder()">
                             </div>
-                            <!-- <button class="au-btn-filter mr-1" type="button" @click="filterOrder(0)">
-                                <i class="zmdi zmdi-filter-list"></i>All
-                            </button> -->
+                          
                             <button class="au-btn-filter mr-1" type="button" @click="filterOrder(1)">
                                 <i class="zmdi zmdi-filter-list"></i>Delivery
                             </button>
-                            <button class="au-btn-filter" type="button" @click="filterOrder(2)">
+                            <button class="au-btn-filter mr-1" type="button" @click="filterOrder(2)">
                                 <i class="zmdi zmdi-filter-list"></i>Walkin
+                            </button>
+                              <button class="au-btn-filter " type="button" @click="filterOrder(3)">
+                                <i class="zmdi zmdi-filter-list"></i> Served
                             </button>
                         </div>
                         <div class="table-data__tool-right">
                             <div class="col-lg-12 text-center mt-2">
-                                <h4> {{ tableData.filter == 0 ? "All" : tableData.filter == 1 ? " Delivery": tableData.filter == 2 ? "Walkin" : "" }}</h4>
+                                <h4> {{ tableData.filter == 0 ? "All" : tableData.filter == 1 ? " Delivery": tableData.filter == 2 ? "Walkin" : "Served" }}</h4>
                             </div>
                             <!-- <button type="button" class="au-btn au-btn-icon au-btn--blue au-btn--small" @click="showProductModal">
                                 <i class="zmdi zmdi-plus"></i>add Product</button> -->
@@ -94,10 +95,15 @@
                     </data-table>
                     <div class="pull-right">
                         <pagination :pagination="pagination"
-                            @prev="listOfProduct(pagination.prevPageUrl)"
-                            @next="listOfProduct(pagination.nextPageUrl)"
+                            @prev="listOfOrder(pagination.prevPageUrl)"
+                            @next="listOfOrder(pagination.nextPageUrl)"
                             v-show="noData(orders)">
                         </pagination>
+                    </div>
+                    <div class="card" v-show="!noData(orders)">
+                        <div class="card-body">
+                            <div class="text-center">No Orders Found!</div>
+                        </div>
                     </div>
                     <!-- END DATA TABLE -->
                 </div> 
@@ -199,7 +205,7 @@ export default {
     data() {
         let sortOrders = {};
         let columns =[
-        {label:'Reservation #', name:'reservation_number'},
+        {label:'Order #', name:'order_number'},
         {label:'Full name', name:'full_name'},
         {label:'Orders', name:null},
         {label:'Delivery Address', name:'delivery_address'},

@@ -5,80 +5,67 @@
             <div class="row">
                 <div class="col-md-12">
                     <!-- DATA TABLE -->
-                    <h3 class="title-5 m-b-35">Products</h3>
+                    <h3 class="title-5 m-b-35">Reservations</h3>
                     <div class="table-data__tool">
                         <div class="table-data__tool-left">
                             <div class="rs-select2--light rs-select2--lg">
-                                   <input class="au-input au-input--full w-100" type="text" v-model="tableData.search"  placeholder="Search ..." @input="listProduct()">
-                                <!-- <select class="js-select2" name="property">
-                                    <option selected="selected">All Properties</option>
-                                    <option value="">Option 1</option>
-                                    <option value="">Option 2</option>
-                                </select>
-                                <div class="dropDownSelect2"></div> -->
+                                   <input class="au-input au-input--full w-100" type="text" v-model="tableData.search"  placeholder="Reservation # ..." @input="listOfOrder()">
                             </div>
-                            <!-- <div class="rs-select2--light rs-select2--sm">
-                                <select class="js-select2" name="time">
-                                    <option selected="selected">Today</option>
-                                    <option value="">3 Days</option>
-                                    <option value="">1 Week</option>
-                                </select>
-                                <div class="dropDownSelect2"></div>
-                            </div> -->
-                            <button class="au-btn-filter">
-                                <i class="zmdi zmdi-filter-list"></i>filters</button>
+                          
+                            <button class="au-btn-filter mr-1" type="button" @click="filterOrder(1)">
+                                <i class="zmdi zmdi-filter-list"></i>Booked
+                            </button>
+                            <!-- <button class="au-btn-filter mr-1" type="button" @click="filterOrder(2)">
+                                <i class="zmdi zmdi-filter-list"></i>Walkin
+                            </button> -->
+                              <button class="au-btn-filter " type="button" @click="filterOrder(2)">
+                                <i class="zmdi zmdi-filter-list"></i> Served
+                            </button>
                         </div>
                         <div class="table-data__tool-right">
-                            <button type="button" class="au-btn au-btn-icon au-btn--blue au-btn--small" @click="showProductModal">
-                                <i class="zmdi zmdi-plus"></i>add Product</button>
-                            <!-- <div class="rs-select2--dark rs-select2--sm rs-select2--dark2">
-                                <select class="js-select2" name="type">
-                                    <option selected="selected">Export</option>
-                                    <option value="">Option 1</option>
-                                    <option value="">Option 2</option>
-                                </select>
-                                <div class="dropDownSelect2"></div>
-                            </div> -->
+                            <div class="col-lg-12 text-center mt-2">
+                                <h4> {{ tableData.filter == 1 ? " Booked": tableData.filter == 2 ? "Served" : "" }}</h4>
+                            </div>
                         </div>
                     </div>
                     <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
-                    <tbody v-for="(list, idx) in products" :key="idx">
+                    <tbody v-for="(list, idx) in reserves" :key="idx">
                             <tr class="tr-shadow">
-                                <td><img class="img-thumbnail w-50" :src="list.image == null ? '../images/icon/icon.png' :'../storage/products/'+list.image" />
-                                    <div class="">
-                                        <a href="#" @click="showUpload(list)" >Edit </a>
+                                <td>
+                                   <span> <strong>{{ list.reservation_number }}</strong></span>
+                                </td>
+                                <td>
+                                    <span class="status--process">{{ list.full_name }}</span>
+                                </td>
+                                <td >
+                                    <div class="badge badge-primary text-white">{{  list.reserves.length }} item/s</div>
+                                    <li v-for="(ls, idx)  in list.reserves" :key="idx">
+                                        {{ ls.name }}...{{ formatAmount(ls.price) }} x {{ ls.quantity }}
+                                    </li>
+                                    <div class="mt-3">
+                                        <button v-if="list.status == 1" @click="saveStatusApproved(list, 2)" class="btn btn-sm btn-primary btn-block" data-toggle="tooltip" data-placement="top"  title="Setting status">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                             set on Approved
+                                        </button>
                                     </div>
                                 </td>
-                                <td><span class="status--process">{{ list.code}}</span></td>
-                                <td class="desc">{{ list.name}}</td>
+                                <td class="desc">{{ list.mobile_number }}</td>
                                 <td>
-                                    <span>{{list.description }}</span>
+                                    <span>{{ formatAmount(list.total) }}</span>
+                                </td>
+                                <!-- <td>
+                                    <span>{{ formatAmount(list.delivery_fee) }}</span>
                                 </td>
                                 <td>
-                                    <span>{{list.category_name }}</span>
-                                </td>
-                                <td>
-                                    <span>{{list.price }}</span>
+                                    <span>{{ formatAmount(list.grand_total) }}</span>
+                                </td> -->
+                                 <td>
+                                    <span>{{ setStatus(list.status) }}</span>
                                 </td>
                                 <td>
                                     <span>{{formatDate(list.created_at) }}</span>
                                 </td>
-                                <td>
-                                    <div class="table-data-feature">
-                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="Send">
-                                            <i class="zmdi zmdi-mail-send"></i>
-                                        </button> -->
-                                        <button class="item" data-toggle="tooltip" data-placement="top"  @click="editProductModal(list)" title="Edit">
-                                            <i class="zmdi zmdi-edit"></i>
-                                        </button>
-                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
-                                            <i class="zmdi zmdi-delete"></i>
-                                        </button> -->
-                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="More">
-                                            <i class="zmdi zmdi-more"></i>
-                                        </button> -->
-                                    </div>
-                                </td>
+                            
                             </tr>
                             <tr class="spacer"></tr>
                             
@@ -86,14 +73,14 @@
                     </data-table>
                     <div class="pull-right">
                         <pagination :pagination="pagination"
-                            @prev="listOfProduct(pagination.prevPageUrl)"
-                            @next="listOfProduct(pagination.nextPageUrl)"
-                            v-show="noData(products)">
+                            @prev="listOfReserve(pagination.prevPageUrl)"
+                            @next="listOfReserve(pagination.nextPageUrl)"
+                            v-show="noData(reserves)">
                         </pagination>
                     </div>
-                    <div class="card" v-show="!noData(products)">
+                    <div class="card" v-show="!noData(reserves)">
                         <div class="card-body">
-                            <div class="text-center">No Data Found!</div>
+                            <div class="text-center">No Reservations Found!</div>
                         </div>
                     </div>
                     <!-- END DATA TABLE -->
@@ -196,21 +183,22 @@ export default {
     data() {
         let sortOrders = {};
         let columns =[
-        {label:'Image', name:'image'},
-        {label:'Code', name:'code'},
-        {label:'Name', name:'name'},
-        {label:'Description', name:'description'},
-        {label:'category', name:null},
-        {label:'Price', name:'price'},
+        {label:'Reservation #', name:'reservation_number'},
+        {label:'Full name', name:'full_name'},
+        {label:'Orders', name:null},
+        {label:'Mobile #', name:null},
+        {label:'Total', name:null},
+        // {label:'Delivery Fee', name:null},
+        // {label:'Grand Total', name:null},
+        {label:'Status', name:null},
         {label:'Date', name:'created_at'},
-        {label:'Action', name:null},
         ];
         
         columns.forEach(column=>{
             sortOrders[column.name] = -1;
         });
         return {
-            products:[],
+            reserves:[],
             categories:[],
             post:{},
             errors:[],
@@ -226,6 +214,7 @@ export default {
                 column:0,
                 archive:0,
                 dir:'desc',
+                filter:1,
             },
             pagination:{
                 lastPage:'',
@@ -236,56 +225,17 @@ export default {
                 prevPageUrl:'',
                 from:'',
                 to:''
-            },
-            form: new FormData,
-            uploadPercentage_:0,
-            showbar:false,
+            }
         }
     },
     methods: {
-        showProductModal(){
-            $('#product').modal('show');
-        },
-
-        editProductModal(data){
-            this.post = data;
-            $('#product').modal('show');
-        },
-        saveProduct(){
-            if(this.post.id > 0){
-                this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                    this.$axios.put('api/product/'+this.post.id,this.post).then(res=>{
-                        this.$emit('show',{'message':'Product has been Modified!', 'status':4});
-                        this.post = {};
-                        $('#product').modal('hide');
-                        this.listOfProduct();
-                    }).catch(err=>{
-                        this.errors = err.response.data.errors
-                    });
-                });
-            }else{
-                this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                    this.$axios.post('api/product',this.post).then(res=>{
-                        this.$emit('show',{'message':'Product Added Successfully!', 'status':4});
-                        this.post = {};
-                        $('#product').modal('hide');
-                        this.listOfProduct();
-                    }).catch(err=>{
-                        this.errors = err.response.data.errors
-                    });
-                });
-            }
-            
-            
-        },
-
-        listOfProduct(urls='api/product'){
+        listOfReserve(urls='api/reserve-list'){
             this.$axios.get('sanctum/csrf-cookie').then(response => {
                 this.tableData.draw ++;
                 this.$axios.get(urls,{params:this.tableData}).then(res=>{
                 let data = res.data;
                     if(this.tableData.draw == data.draw){
-                        this.products = data.data.data;
+                        this.reserves = data.data.data;
                         this.configPagination(data.data);
                     }else{
                         this.not_found = true;
@@ -312,7 +262,7 @@ export default {
                 this.sortOrders[key] = this.sortOrders[key] * -1;
                 this.tableData.column = this.getIndex(this.columns, 'name', key);
                 this.tableData.dir = this.sortOrders[key] === 1 ? 'asc' : 'desc';
-                this.listOfProduct();
+                this.listOfReserve();
             }
         },
         getIndex(array, key, value){
@@ -335,43 +285,36 @@ export default {
             const year =  d.getFullYear();
             return  month+ "-" + day  + "-" + year;
         },
-        showUpload(data){
-            this.upload = data
-            $('#upload-img').modal('show');
+        filterOrder(num){
+            this.tableData.filter = num;
+            this.listOfReserve();
         },
-        browseImg(){
-            $('#uploader').click();
+        formatAmount(num){
+            let val = (num/1).toFixed(2).replace(',', '.')
+            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         },
-        uploadImage(e){
-            this.img = e.target.files[0];
-            this.uploadLogo();
+        payMode(data){
+            return data == 1 ? "Delivery" : "Walkin";
         },
-        uploadLogo(){
-            this.form.append('image', this.img);
-            this.form.append('id',  this.upload.id);
-             const config = {
-                header:{'Content-Type':'multipart/form-data'},
-                    onUploadProgress:(e)=>{
-                        this.uploadPercentage_ = parseInt(Math.round((e.loaded * 100)/ e.total));
-                        this.showbar = true;
-                    }
-                };
-            this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.$axios.post('api/product-upload',this.form, config).then(res=>{
-                    this.showbar = false;
-                    this.uploadPercentage_ = 0;
-                    this.listOfProduct();
-                    $('#upload-img').modal('hide');
-                }).catch(err=>{
-                    this.uploadPercentage_ = 0;
+        setStatus(num){
+            return num == 0 ? "Received" : num == 1 ? "Confirmed" :  num == 2 ? "Approved" :num == 3? "Served" :"Canceled";
+        },
+        saveStatusApproved(data, num){
+             this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('api/reserve-status', {'status':num,'id':data.id})
+                .then(response => {
+                    this.$emit('show',{'message':'Status Mode is set on the APPROVED!', 'status':4});
+                    this.listOfReserve();
+                })
+                .catch(function (error) {
+                    
                 });
-            });
-           
+            })
         },
-        
+       
     },
     mounted() {
-        this.listOfProduct();
+        this.listOfReserve();
         this.listCategory()
     },
 }

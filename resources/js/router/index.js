@@ -18,6 +18,8 @@ import FoodCategory from '../admin/FoodCategory';
 import Products from '../admin/Product';
 import Settings from '../admin/Setting';
 import AdminOrder from '../admin/AdminOrder';
+import AdminReserve from '../admin/AdminReservation';
+import AdminProfile from '../admin/AdminProfile';
 
 
 export const routes = [
@@ -119,6 +121,16 @@ export const routes = [
                 path:'/orders',
                 name:'adminorder',
                 component: AdminOrder  
+            },
+            {
+                path:'/reservations',
+                name:'adminreserve',
+                component: AdminReserve  
+            },
+            {
+                path:'/account',
+                name:'account',
+                component: AdminProfile  
             }
         ]
     }
@@ -157,7 +169,9 @@ const adminRoutes = [
     'products',
     'settings',
     'admindashboard',
-    'adminorder'
+    'adminorder',
+    'adminreserve',
+    'account'
     
 ];
 

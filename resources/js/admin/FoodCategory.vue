@@ -76,6 +76,11 @@
                             v-show="noData(categories)">
                         </pagination>
                     </div>
+                    <div class="card" v-show="!noData(categories)">
+                        <div class="card-body">
+                            <div class="text-center">No Data Found!</div>
+                        </div>
+                    </div>
                     <!-- END DATA TABLE -->
                 </div> 
             </div>
