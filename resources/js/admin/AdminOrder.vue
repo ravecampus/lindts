@@ -11,9 +11,9 @@
                             <div class="rs-select2--light rs-select2--lg">
                                    <input class="au-input au-input--full w-100" type="text" v-model="tableData.search"  placeholder="Search ..." @input="listProduct()">
                             </div>
-                            <button class="au-btn-filter mr-1" type="button" @click="filterOrder(0)">
+                            <!-- <button class="au-btn-filter mr-1" type="button" @click="filterOrder(0)">
                                 <i class="zmdi zmdi-filter-list"></i>All
-                            </button>
+                            </button> -->
                             <button class="au-btn-filter mr-1" type="button" @click="filterOrder(1)">
                                 <i class="zmdi zmdi-filter-list"></i>Delivery
                             </button>
@@ -51,9 +51,22 @@
                                     <li v-for="(ls, idx)  in list.order_items" :key="idx">
                                         {{ ls.name }}...{{ formatAmount(ls.price) }} x {{ ls.quantity }}
                                     </li>
-                                    <div class="table-data-feature">
-                                        <button class="btn btn-sm btn-primary btn-block" data-toggle="tooltip" data-placement="top"  @click="editProductModal(list)" title="Edit">
-                                                <i class="zmdi zmdi-edit"></i>
+                                    <div class="mt-3">
+                                        <button v-if="list.status == 1 && list.payment_mode == 1" @click="saveStatusDelivery(list, 2)" class="btn btn-sm btn-warning btn-block" data-toggle="tooltip" data-placement="top"  title="Setting status">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                             set on Prepare to Kitchen
+                                        </button>
+                                        <button v-if="list.status == 2 && list.payment_mode == 1" @click="saveStatusDelivery(list, 3)" class="btn btn-sm btn-primary btn-block" data-toggle="tooltip" data-placement="top" title="Setting Status">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                             set on for Delivery
+                                        </button>
+                                        <button  v-if="list.status == 0 && list.payment_mode == 2" @click="saveStatusWalkin(list, 1)" class="btn btn-sm btn-danger btn-block" data-toggle="tooltip" data-placement="top" title="Setting Status">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                             set on Prepare to Kitchen
+                                        </button>
+                                         <button  v-if="list.status == 1 && list.payment_mode == 2" @click="saveStatusWalkin(list, 2)" class="btn btn-sm btn-success btn-block" data-toggle="tooltip" data-placement="top" title="Setting Status">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            set on Ready to Pickup
                                         </button>
                                     </div>
                                 </td>
@@ -217,7 +230,7 @@ export default {
                 column:0,
                 archive:0,
                 dir:'desc',
-                filter:0,
+                filter:1,
             },
             pagination:{
                 lastPage:'',
@@ -314,11 +327,45 @@ export default {
             let mode = data.payment_mode;
             let status = data.status;
             if(mode == 1){
-                return ( status == 0 ? "Unpaid" : status == 1 ? "Paid and Received" : status == 2 ? " Kitchen" : status == 3 ? "In Transit" :  status == 4 ? "Delivered" : "Cancel") +" (Delivery)";
+                return ( status == 0 ? "Unpaid" : status == 1 ? "Paid and Received" : status == 2 ? " Kitchen" : status == 3 ? "In Transit" :  status == 4 ? "Delivered" : "Canceled") +" (Delivery)";
             }else{
-                return ( status == 0 ? "Received" : status == 1 ? "Kitchen" : status == 2 ? "Ready to Pickup" :status == 4 ? "Picked" : "Cancel") + " (Walkin)";
+                return ( status == 0 ? "Received" : status == 1 ? "Kitchen" : status == 2 ? "Ready to Pickup" :status == 4 ? "Picked" : "Canceled") + " (Walkin)";
             }
         },
+
+        saveStatusDelivery(data, num){
+             this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('api/set-status', {'status':num,'id':data.id})
+                    .then(response => {
+                      if(num == 2){
+                          this.$emit('show',{'message':'Status Mode is set on the KITCHEN!', 'status':4});
+                      }else if(num == 3){
+                          this.$emit('show',{'message':'Status Mode is set on the IN TRANSIT!', 'status':4});
+                      }
+                      this.listOfOrder();
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            })
+        },
+        saveStatusWalkin(data, num){
+             this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('api/set-status',{'status':num,'id':data.id})
+                    .then(response => {
+                      if(num == 1){
+                          this.$emit('show',{'message':'Status Mode is set on the KITCHEN!', 'status':4});
+                      }else if(num == 2){
+                          this.$emit('show',{'message':'Status Mode is set on the READY TO PICKUP!', 'status':4});
+                      }
+                      this.listOfOrder();
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+                    
+            })
+        }
        
     },
     mounted() {

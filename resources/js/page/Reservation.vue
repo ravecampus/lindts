@@ -55,7 +55,7 @@
                                     <div class="btn-group pull-right">
                                         <button type="button" @click="saveReservation()" class="book-a-table-btn btn-sm-table"><span class="fa fa-send"></span> {{ btncap }}</button>
                                         <button type="button" @click="showBooking()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> List of Booking</button>
-                                        <button type="button" @click="showHistory()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> History</button>
+                                        <button type="button" @click="showHistory()" class="book-a-table-btn btn-sm-table"><span class="fa fa-list"></span> History & Canceled</button>
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +232,7 @@
                                                     <button class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top"  @click="payReserve(list)" title="Pay with Paypal">
                                                         Pay
                                                     </button>
-                                                    <button class="btn btn-sm btn-secondary" @click="showCancelOrder(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
+                                                    <button class="btn btn-sm btn-secondary" @click="showCancelReserve(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
                                                         Cancel
                                                     </button>
                                                 </div>
@@ -345,6 +345,26 @@
                 </div>
             </div>
 
+        <div class="modal fade cancel-reserve" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    </div>
+                    <div class="modal-body bg-light">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4 class="text-warning">Do you want to cancel your Reservation?</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer text-center">
+                        <button type="button" @click="cancelReserve(canda)" class="btn btn-warning btn-sm">Yes</button>
+                        <button type="button" @click="cancelButton()" class="btn btn-secondary btn-sm">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -400,6 +420,7 @@ export default {
             dataset:{
                 search:''
             },
+            canda:{},
             categories:[],
             product:{},
             reserves:[],
@@ -654,7 +675,7 @@ export default {
             $('.booking').modal('show');
         },
         setStatus(num){
-            return num == 0 ? "Received" : num == 1 ? "Confirmed" :  num == 2 ? "Approved" :num == 3? "Served" :"";
+            return num == 0 ? "Received" : num == 1 ? "Confirmed" :  num == 2 ? "Approved" :num == 3? "Served" :"Canceled";
         },
         payReserve(data){
             $('.booking').modal('hide');
@@ -664,7 +685,27 @@ export default {
             this.tableData.filter = 1;
             this.listOfBookings();
             $('.history').modal('show');
+        },
+        showCancelReserve(data){
+            this.canda = data;
+            $('.cancel-reserve').modal('show');
+        },
+        cancelReserve(data){
+            this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('api/reserve-status', {'status':5,'id':data.id})
+                    .then(response => {
+                        this.listOfBookings();
+                        $('.cancel-reserve').modal('hide');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            })
+        },
+        cancelButton(){
+             $('.cancel-reserve').modal('hide');
         }
+
 
     },
     mounted() {

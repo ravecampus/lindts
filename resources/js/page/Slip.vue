@@ -20,7 +20,7 @@
                         <hr class="my-2">
                         <div class="form-group "> 
                              <label class="radio-inline">
-                                 Name / Address : <strong>{{ order.full_name }} / {{ order.delivery_address}} </strong>
+                                 Name / mobile #  : <strong>{{ order.full_name }} / {{ order.mobile_number}} </strong>
                              </label> 
                         </div>
                         <div class="form-group "> 

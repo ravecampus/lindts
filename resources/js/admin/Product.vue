@@ -31,14 +31,14 @@
                         <div class="table-data__tool-right">
                             <button type="button" class="au-btn au-btn-icon au-btn--blue au-btn--small" @click="showProductModal">
                                 <i class="zmdi zmdi-plus"></i>add Product</button>
-                            <div class="rs-select2--dark rs-select2--sm rs-select2--dark2">
+                            <!-- <div class="rs-select2--dark rs-select2--sm rs-select2--dark2">
                                 <select class="js-select2" name="type">
                                     <option selected="selected">Export</option>
                                     <option value="">Option 1</option>
                                     <option value="">Option 2</option>
                                 </select>
                                 <div class="dropDownSelect2"></div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <data-table class="mt-2" :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders" @sort="sortBy">
@@ -71,9 +71,9 @@
                                         <button class="item" data-toggle="tooltip" data-placement="top"  @click="editProductModal(list)" title="Edit">
                                             <i class="zmdi zmdi-edit"></i>
                                         </button>
-                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
                                             <i class="zmdi zmdi-delete"></i>
-                                        </button>
+                                        </button> -->
                                         <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="More">
                                             <i class="zmdi zmdi-more"></i>
                                         </button> -->

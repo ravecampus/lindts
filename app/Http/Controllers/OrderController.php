@@ -22,10 +22,10 @@ class OrderController extends Controller
         $dir = $request->dir;
         $filter = $request->filter;
         $searchValue = $request->search;
-        if($filter == 0){
-            $query = Order::with('order_items')->where('status', '!=', 0)->orderBy($columns[$column], $dir);
-        }else{
-            $query = Order::with('order_items')->where('status', '!=', 0)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
+        if($filter == 1){
+            $query = Order::with('order_items')->where('status', '!=', 4)->where('status', '!=', 5)->where('status', '!=', 0)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
+        }else if($filter == 2){
+            $query = Order::with('order_items')->where('status', '!=', 4)->where('status', '!=', 5)->where('payment_mode', $filter)->orderBy($columns[$column], $dir);
         }
             
         if($searchValue){

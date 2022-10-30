@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('order-auth', [OrderController::class, 'authOrders']);
     Route::get('order-payment', [OrderController::class, 'orderPayment']);
     Route::resource('order', OrderController::class);
+    
 
     Route::post('payreserve', [PaymentController::class, 'chargeReserve']);
     Route::get('payreserve-success', [PaymentController::class, 'successReserve']);
@@ -68,5 +69,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('reservation-json',ReservationJsonController::class);
     Route::get('reserve-payment',[ReservationController::class, 'reservePayment']);
     Route::resource('reservation',ReservationController::class);
+    Route::post('reserve-status',[ReservationController::class,'setReserveStatus']);
     
 });

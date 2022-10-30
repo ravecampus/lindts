@@ -26,9 +26,9 @@ class ReservationController extends Controller
         $filter = $request->filter;
 
         if($filter == 0){
-            $query = Reservation::with('reserves')->where('status','!=', 3)->where('user_id', Auth::id())->orderBy($columns[$column], $dir);
+            $query = Reservation::with('reserves')->where('status','!=', 5)->where('status','!=', 3)->where('user_id', Auth::id())->orderBy($columns[$column], $dir);
         }else{
-            $query = Reservation::with('reserves')->where('status', 3)->where('user_id', Auth::id())->orderBy($columns[$column], $dir);
+            $query = Reservation::with('reserves')->where('status','>=', 3)->where('user_id', Auth::id())->orderBy($columns[$column], $dir);
         }
        
     
@@ -153,6 +153,14 @@ class ReservationController extends Controller
     public function reservePayment(Request $request){
         $id = Auth::id();
         $order = Reservation::where('user_id', $id)->where('status',0)->where('reservation_number', $request->reservation_number)->first();
+        return response()->json($order, 200);
+    }
+
+    public function setReserveStatus(Request $request){
+        $order = Reservation::find($request->id);
+        $order->status = $request->status;
+        $order->save();
+
         return response()->json($order, 200);
     }
 }

@@ -27,7 +27,7 @@
           <li><router-link class="nav-link scrollto" :to="{name:'menu'}">Menu</router-link></li>
          
           <li><router-link :to="{name:'reservation'}" class="nav-link scrollto">Reservations</router-link></li>
-           <li v-if="auth" class="dropdown"><a href="#"><span>{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</span> <i class="bi bi-chevron-down"></i></a>
+           <li v-if="auth" class="dropdown"><a href="#"><span><strong class="text-uppercase">{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</strong></span> <i class="bi bi-chevron-down"></i></a>
             <ul>
               <li><router-link :to="{name:'myprofile'}"><strong>Profile</strong></router-link>
               </li>

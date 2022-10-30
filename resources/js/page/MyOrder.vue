@@ -33,10 +33,6 @@
                     <tbody v-for="(list, idx) in orders" :key="idx">
                             <tr class="tr-shadow">
                                 <td>{{ list.order_number }}
-                                    <!-- <img class="img-thumbnail w-50" :src="list.image == null ? '../images/icon/icon.png' :'../storage/products/'+list.image" />
-                                    <div class="">
-                                        <a href="#" @click="showUpload(list)" >Edit </a>
-                                    </div> -->
                                 </td>
                                 <td><span class="status--process">&#8369;{{ formatAmount(list.total) }}</span></td>
                                 <td class="desc">&#8369; {{ list.payment_mode == 1 ? formatAmount(list.delivery_fee) : 0 }}</td>
@@ -62,6 +58,14 @@
                                         </button>
                                         <button class="btn btn-sm btn-secondary" @click="showCancelOrder(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
                                             Cancel
+                                        </button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary" v-if="list.status == 2  && list.payment_mode == 2" data-toggle="tooltip" data-placement="top"  @click="setStatusForHistory(list)" title="Pay with Paypal">
+                                            Finish
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" v-if="list.status == 3 && list.payment_mode == 1" @click="setStatusForHistory(list)" data-toggle="tooltip" data-placement="top" title="Cancel Orders">
+                                            Received
                                         </button>
                                     </div>
                                 </td>
@@ -318,9 +322,9 @@ export default {
             let mode = data.payment_mode;
             let status = data.status;
             if(mode == 1){
-                return ( status == 0 ? "Unpaid" : status == 1 ? "Paid and Received" : status == 2 ? " Kitchen" : status == 3 ? "In Transit" :  status == 4 ? "Delivered" : "Cancel") +" (Delivery)";
+                return ( status == 0 ? "Unpaid" : status == 1 ? "Paid and Received" : status == 2 ? " Kitchen" : status == 3 ? "In Transit" :  status == 4 ? "Delivered" : "Canceled") +" (Delivery)";
             }else{
-                return ( status == 0 ? "Received" : status == 1 ? "Kitchen" : status == 2 ? "Ready to Pickup" :status == 4 ? "Picked" : "Cancel") + " (Walkin)";
+                return ( status == 0 ? "Received" : status == 1 ? "Kitchen" : status == 2 ? "Ready to Pickup" :status == 4 ? "Picked" : "Canceled") + " (Walkin)";
             }
         },
         showCancelOrder(data){
@@ -333,6 +337,18 @@ export default {
                     .then(response => {
                         this.listOfOrderAuth();
                         $('.cancel-order').modal('hide');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            })
+        },
+        setStatusForHistory(data){
+             this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('api/set-status', {'status':4,'id':data.id})
+                    .then(response => {
+                        this.listOfOrderAuth();
+                      this.$emit('show',{'message':'Status Mode was Changed!', 'status':4});
                     })
                     .catch(function (error) {
                         console.error(error);
