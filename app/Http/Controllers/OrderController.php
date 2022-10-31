@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\Reservation;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\Auth;
 
@@ -222,6 +223,60 @@ class OrderController extends Controller
         $order->save();
 
         return response()->json($order, 200);
+    }
+
+    public function salesOrder(Request $request){
+        $columns = ['order_number','created_at', 'full_name'];
+        $length = $request->length;
+        $column = $request->column;
+        $dir = $request->dir;
+        $searchValue = $request->search;
+        $from = $request->date_from;
+        $to = $request->date_to;
+
+        if($from){
+            $query = Order::where('status','!=', 0)->where('status','!=', 5)->where('created_at','>=', $from)->where('created_at','<=', $to)
+            ->orderBy($columns[$column], $dir);
+        }else{
+            $query = Order::where('status','!=', 0)->where('status','!=', 5)->orderBy($columns[$column], $dir);
+        }
+        
+    
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('order_number', 'like', '%'.$searchValue.'%')
+                ->orWhere('full_name', 'like', '%'.$searchValue.'%');
+            });
+        }
+        $projects = $query->paginate($length);
+        return ['data'=>$projects, 'draw'=> $request->draw];
+    }
+
+    public function salesReserve(Request $request){
+        $columns = ['reservation_number','created_at', 'full_name'];
+        $length = $request->length;
+        $column = $request->column;
+        $dir = $request->dir;
+        $searchValue = $request->search;
+        $from = $request->date_from;
+        $to = $request->date_to;
+
+        if($from){
+            $query = Reservation::where('status','!=', 0)->where('status','!=', 5)->where('created_at','>=', $from)->where('created_at','<=', $to)
+            ->orderBy($columns[$column], $dir);
+        }else{
+            $query = Reservation::where('status','!=', 5)->orderBy($columns[$column], $dir);
+        }
+        
+    
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('reservation_number', 'like', '%'.$searchValue.'%')
+                ->orWhere('full_name', 'like', '%'.$searchValue.'%');
+            });
+        }
+        $projects = $query->paginate($length);
+        return ['data'=>$projects, 'draw'=> $request->draw];
     }
     
 }

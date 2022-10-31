@@ -27,7 +27,7 @@
                                     </div>
                                 </div>
                                 
-                                <button type="button" @click="saveSetting" class="btn btn-primary btn-sm">{{btncap_}}</button>
+                                <button type="button" @click="savePersonal" class="btn btn-primary btn-sm">{{btncap_}}</button>
                             </div>
                         </div>
                         <div class="card">
@@ -37,17 +37,17 @@
                                     <div class="row gx-3 mb-3">
                                         <div class="col-md-6">
                                             <label class="small mb-1" for="inputEmailAddress">New Password</label>
-                                            <input class="form-control" v-model="post.password" type="password">
+                                            <input class="form-control" v-model="post_.password" type="password">
                                             <span class="errors-material" v-if="errors.password">{{errors.password[0]}}</span>
                                         </div>
                                     
                                         <div class="col-md-6">
                                             <label class="small mb-1" for="inputLocation">Password Confirmation</label>
-                                            <input class="form-control" v-model="post.password_confirmation" id="inputLocation" type="password">
+                                            <input class="form-control" v-model="post_.password_confirmation" id="inputLocation" type="password">
                                             <span class="errors-material" v-if="errors.password_confirmation">{{errors.password_confirmation[0]}}</span>
                                         </div>
                                     </div>
-                                <button type="button" @click="saveDeliveryFee" class="btn btn-primary btn-sm">{{btncap}}</button>
+                                <button type="button" @click="savePassword" class="btn btn-primary btn-sm">{{btncap}}</button>
                             </div>
                         </div>
                     </div>
@@ -62,6 +62,7 @@ export default {
     data(){ 
         return{
             post:{},
+            post_:{},
             setting:{},
             errors:[],
             btncap:'Save',
@@ -69,39 +70,37 @@ export default {
         }
     },
     methods: {
-        saveDeliveryFee(){
+        savePassword(){
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
                 this.btncap = 'Saving ...';
-                this.$axios.post('api/delivery-fee', this.post).then(res=>{
+                this.$axios.post('api/user-password', this.post_).then(res=>{
                     this.btncap = 'Save';
+                     this.errors = [];
+                     this.post_ = {};
                 }).catch(err=>{
                     this.btncap = 'Save';
+                    this.errors = err.response.data.errors
                 });
             });
         },
-        saveSetting(){
+        savePersonal(){
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
                 this.btncap_ = 'Saving ...';
-                this.$axios.post('api/setting',this.setting).then(res=>{
+                this.$axios.post('api/admin-profile',this.post).then(res=>{
                     this.btncap_ = 'Save';
+                    this.post = res.data;
+                    this.errors = [];
                 }).catch(err=>{
                     this.btncap_ = 'Save';
                     this.errors = err.response.data.errors
                 });
             });
         },
-        getSetting(){
-            this.$axios.get('sanctum/csrf-cookie').then(response=>{
-                this.$axios.get('api/setting-get').then(res=>{
-                    this.setting = res.data;
-                });
-            });
-        }
+       
     },
     mounted(){
         let user = window.Laravel.user;
         this.post = user;
-        this.getSetting();
     }
 }
 </script>

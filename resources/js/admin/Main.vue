@@ -42,8 +42,17 @@
                                 <i class="fas fa-calendar-alt"></i>Reservations</router-link>
                         </li>
                         <li>
-                            <a href="map.html">
-                                <i class="fas fa-users"></i>Users</a>
+                            <router-link :to="{name:'adminuser'}">
+                                <i class="fas fa-user"></i>Users</router-link>
+                        </li>
+
+                        <li>
+                            <router-link :to="{name:'adminclient'}">
+                                <i class="fas fa-users"></i>Clients</router-link>
+                        </li>
+                        <li>
+                            <router-link :to="{name:'adminreport'}">
+                                <i class="fas fa-files-o"></i>Reports</router-link>
                         </li>
                        
                     </ul>
@@ -62,7 +71,7 @@
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
                     <ul class="list-unstyled navbar__list">
-                        <li class="has-sub">
+                        <li>
                             <router-link :to="{name:'admindashboard'}">
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</router-link>
                         </li>
@@ -84,8 +93,26 @@
                                 <i class="fas fa-calendar-alt"></i>Reservations</router-link>
                         </li>
                         <li>
-                            <a href="map.html">
-                                <i class="fas fa-users"></i>Users</a>
+                            <router-link :to="{name:'adminuser'}">
+                                <i class="fas fa-user"></i>Users</router-link>
+                        </li>
+                        <li>
+                            <router-link :to="{name:'adminclient'}">
+                                <i class="fas fa-users"></i>Clients</router-link>
+                        </li>
+
+                        <li class="has-sub">
+                            <a class="js-arrow" href="#">
+                                <i class="fas fa-copy"></i>Reports</a>
+                            <ul class="list-unstyled navbar__sub-list js-sub-list">
+                                <li>
+                                    <router-link :to="{name:'adminreport'}">Orders</router-link>
+                                </li>
+                                <li>
+                                    <router-link :to="{name:'adminreport1'}">Reservations</router-link>
+                                </li>
+                               
+                            </ul>
                         </li>
                         
                         
@@ -98,15 +125,15 @@
         <!-- PAGE CONTAINER-->
         <div class="page-container">
             <!-- HEADER DESKTOP-->
-            <header class="header-desktop">
+            <header class="header-desktop d-print-none">
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
                         <div class="header-wrap">
                             <form class="form-header" action="" method="POST">
-                                <input class="au-input au-input--xl" type="text" name="search" placeholder="Search for datas &amp; reports..." />
+                                <!-- <input class="au-input au-input--xl" type="text" name="search" placeholder="Search for datas &amp; reports..." />
                                 <button class="au-btn--submit" type="submit">
                                     <i class="zmdi zmdi-search"></i>
-                                </button>
+                                </button> -->
                             </form>
                             <div class="header-button">
                                 <div class="noti-wrap">
@@ -227,7 +254,7 @@
                                             <img :src="'/../images/icon/profile.png'"  />
                                         </div>
                                         <div class="content">
-                                            <a class="js-acc-btn" href="#">john doe</a>
+                                            <a class="js-acc-btn" href="#">{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</a>
                                         </div>
                                         <div class="account-dropdown js-dropdown">
                                             <div class="info clearfix">
@@ -238,7 +265,7 @@
                                                 </div>
                                                 <div class="content">
                                                     <h5 class="name">
-                                                        <a href="#">{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</a>
+                                                        <router-link :to="{name:'account'}">{{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</router-link>
                                                     </h5>
                                                     <span class="email">{{ user.email }}</span>
                                                 </div>
@@ -385,6 +412,27 @@ export default {
             $(dropdown).slideToggle('500');
             return false;
             });
+        } catch (error) {
+            console.log(error);
+        }
+
+        try {
+            var list_load = $('.js-list-load');
+            if (list_load[0]) {
+            list_load.each(function () {
+                var that = $(this);
+                that.find('.js-load-item').hide();
+                var load_btn = that.find('.js-load-btn');
+                load_btn.on('click', function (e) {
+                $(this).text("Loading...").delay(1500).queue(function (next) {
+                    $(this).hide();
+                    that.find(".js-load-item").fadeToggle("slow", 'swing');
+                });
+                e.preventDefault();
+                });
+            })
+
+            }
         } catch (error) {
             console.log(error);
         }

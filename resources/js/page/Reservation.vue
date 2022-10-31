@@ -730,11 +730,11 @@ export default {
         this.listCategory();
         this.reservationJson();
         this.listOfBookings();
-        
-        let user = window.Laravel.user;
-        this.post.full_name = ((user.first_name == null) ? "": user.first_name)+" "+((user.last_name == null) ? "" : user.last_name);
-        this.post.mobile_number = user.mobile_number;
-    
+        if(window.Laravel.isLoggedin){
+            let user = window.Laravel.user;
+            this.post.full_name = ((user.first_name == null) ? "": user.first_name)+" "+((user.last_name == null) ? "" : user.last_name);
+            this.post.mobile_number = user.mobile_number;
+        }
     },
 }
 </script>

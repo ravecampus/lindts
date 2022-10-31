@@ -54,4 +54,9 @@ class User extends Authenticatable
         return $this->hasOne(ShippingAddress::class, 'user_id', 'id')->where('default',1);
     }
 
+    public function del_address()
+    {
+        return $this->hasMany(ShippingAddress::class, 'user_id', 'id');
+    }
+
 }

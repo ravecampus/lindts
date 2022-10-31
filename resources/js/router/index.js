@@ -20,6 +20,10 @@ import Settings from '../admin/Setting';
 import AdminOrder from '../admin/AdminOrder';
 import AdminReserve from '../admin/AdminReservation';
 import AdminProfile from '../admin/AdminProfile';
+import AdminUser from '../admin/AdminUser';
+import AdminClient from '../admin/AdminClient';
+import AdminReport from '../admin/Report';
+import AdminReport1 from '../admin/Report1';
 
 
 export const routes = [
@@ -131,6 +135,26 @@ export const routes = [
                 path:'/account',
                 name:'account',
                 component: AdminProfile  
+            },
+            {
+                path:'/users',
+                name:'adminuser',
+                component: AdminUser 
+            },
+            {
+                path:'/clients',
+                name:'adminclient',
+                component: AdminClient 
+            },
+            {
+                path:'/orders-report',
+                name:'adminreport',
+                component: AdminReport 
+            },
+            {
+                path:'/reservation-report',
+                name:'adminreport1',
+                component: AdminReport1
             }
         ]
     }
@@ -171,7 +195,11 @@ const adminRoutes = [
     'admindashboard',
     'adminorder',
     'adminreserve',
-    'account'
+    'account',
+    'adminuser',
+    'adminclient',
+    'adminreport',
+    'adminreport1',
     
 ];
 

@@ -12,10 +12,21 @@
             <div class="carousel-container">
               <div class="carousel-content">
                 <h2 class="animate__animated animate__fadeInDown title-design"><span>Lindt's</span> Restaurant</h2>
-                <p class="animate__animated animate__fadeInUp">Ut velit est quam dolor ad a aliquid qui aliquid. Sequi ea ut et est quaerat sequi nihil ut aliquam. Occaecati alias dolorem mollitia ut. Similique ea voluptatem. Esse doloremque accusamus repellendus deleniti vel. Minus et tempore modi architecto.</p>
+                <p class="animate__animated animate__fadeInUp">
+                  Real. Fresh. Food.
+Healthy and modern.
+From farm to plate.
+Directly from mother earth.
+Eat natural – eat organic.
+Choose healthy. Be strong. Live long.
+We’re fresher! We’re tastier!
+Living the green life.
+Food that’s good for your heart.
+Health is wealth. Eat good.
+                </p>
                 <div>
                   <router-link  :to="{name:'menu'}" class="btn-menu animate__animated animate__fadeInUp scrollto">Our Menu</router-link>
-                  <a href="#book-a-table" class="btn-book animate__animated animate__fadeInUp scrollto">Book Your Reservation</a>
+                  <router-link :to="{name:'reservation'}" class="btn-book animate__animated animate__fadeInUp scrollto">Book Your Reservation</router-link>
                 </div>
               </div>
             </div>

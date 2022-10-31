@@ -13,6 +13,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationJsonController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('setting', [SettingController::class,'postSetting']);
     Route::get('setting-get', [SettingController::class,'getSetting']);
 
+    Route::get('sales-reserve', [OrderController::class, 'salesReserve']);
+    Route::get('sales-order', [OrderController::class, 'salesOrder']);
     Route::post('set-status', [OrderController::class, 'setStatus']);
     Route::get('order-auth', [OrderController::class, 'authOrders']);
     Route::get('order-payment', [OrderController::class, 'orderPayment']);
@@ -63,8 +66,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('paypal/charges', [PaymentController::class, 'charge']);
     Route::get('paypal/success',[PaymentController::class,'success']);
 
+    Route::post('admin-profile',[AuthController::class,'adminProfile']);
     Route::post('user-profile',[AuthController::class,'userProfile']);
     Route::post('user-password',[AuthController::class,'userPassword']);
+    Route::resource('usersa',UserController::class);
 
     Route::resource('reservation-json',ReservationJsonController::class);
     Route::get('reserve-payment',[ReservationController::class, 'reservePayment']);

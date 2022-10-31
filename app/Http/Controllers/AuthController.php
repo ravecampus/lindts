@@ -106,4 +106,20 @@ class AuthController extends Controller
         return response()->json($user, 200);
     }
 
+    public function adminProfile(Request $request){
+        $request->validate([
+            'username' =>'required|string',
+            'first_name' =>'required|string',
+            'last_name' =>'required|string',
+        ]);
+
+        $id = Auth::id();
+        $user = User::find($id);
+        $user->username = $request->username;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->save();
+        return response()->json($user, 200);
+    }
+
 }
