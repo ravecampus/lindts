@@ -282,7 +282,7 @@
 <footer id="footer">
     <div class="container d-print-none">
       <h3 class="title-design">{{title}}</h3>
-      <p>Et aut eum quis fuga eos sunt ipsa nihil. Labore corporis magni eligendi fuga maxime saepe commodi placeat.</p>
+      <p>Making the world a better place one plate at a time.</p>
       <div class="social-links">
         <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
         <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
