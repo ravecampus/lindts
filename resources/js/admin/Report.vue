@@ -75,13 +75,13 @@
                             </tr>
                         </tbody>
                     </data-table>
-                    <div class="pull-right  d-print-none">
+                    <!-- <div class="pull-right  d-print-none">
                         <pagination :pagination="pagination"
                             @prev="listOfSalesOrder(pagination.prevPageUrl)"
                             @next="listOfSalesOrder(pagination.nextPageUrl)"
                             v-show="noData(orders)">
                         </pagination>
-                    </div>
+                    </div> -->
                     <div class="card d-print-none" v-show="!noData(orders)">
                         <div class="card-body">
                             <div class="text-center">No Data Found!</div>
@@ -222,8 +222,8 @@ export default {
                 this.$axios.get(urls,{params:this.tableData}).then(res=>{
                 let data = res.data;
                     if(this.tableData.draw == data.draw){
-                        this.orders = data.data.data;
-                        this.configPagination(data.data);
+                        this.orders = data.data;
+                        // this.configPagination(data.data);
                     }else{
                         this.not_found = true;
                     }

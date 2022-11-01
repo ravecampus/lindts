@@ -455,6 +455,9 @@ export default {
         }
     },
     methods:{
+        linkauth(){
+            $('.notauth').modal('show');
+        },
         showMenu(){
             $('.menu-list').modal('show');
         },
@@ -496,6 +499,10 @@ export default {
             });
         },
         addReserve(res){
+            if(!window.Laravel.isLoggedin){
+                this.linkauth();
+                return;
+            }
              let data = res;
 
             if(this.reserves.length > 0){
@@ -602,6 +609,10 @@ export default {
             return ret;
         },
         saveReservation(){
+            if(!window.Laravel.isLoggedin){
+                this.linkauth();
+                return;
+            }
             this.post.menu = this.reserves;
             this.post.total =this.grandTotal(this.reserves);
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
@@ -673,6 +684,10 @@ export default {
             return  month+ "-" + day  + "-" + year;
         },
         showBooking(){
+            if(!window.Laravel.isLoggedin){
+                this.linkauth();
+                return;
+            }
             this.bookings = [];
             this.tableData.filter = 0;
             this.listOfBookings();
@@ -686,6 +701,10 @@ export default {
             this.$router.push({name:'payreserve', query:{'reserve':data.reservation_number}});
         },
         showHistory(){
+            if(!window.Laravel.isLoggedin){
+                this.linkauth();
+                return;
+            }
             this.bookings = [];
             this.tableData.filter = 1;
             this.listOfBookings();
@@ -726,6 +745,9 @@ export default {
 
     },
     mounted() {
+        $(this.$refs.notauth).on('hidden.bs.modal',()=> {
+            $('.menu-list').modal('hide');
+        })
         this.listOfProductWithFilter(0);
         this.listCategory();
         this.reservationJson();

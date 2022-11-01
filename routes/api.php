@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationJsonController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,7 @@ Route::post('signin',[AuthController::class, 'signin']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('list-category', [FoodCategoryController::class,'listCategory']);
 Route::get('product-filter/{id}', [ProductController::class, 'productFilter']);
+Route::get('setting-get', [SettingController::class,'getSetting']);
 
 Route::middleware('auth:sanctum')->group(function () {
     
@@ -51,7 +53,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     
     Route::post('setting', [SettingController::class,'postSetting']);
-    Route::get('setting-get', [SettingController::class,'getSetting']);
 
     Route::get('sales-reserve', [OrderController::class, 'salesReserve']);
     Route::get('sales-order', [OrderController::class, 'salesOrder']);
@@ -76,5 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('reserve-list',[ReservationController::class, 'listReservation']);
     Route::resource('reservation',ReservationController::class);
     Route::post('reserve-status',[ReservationController::class,'setReserveStatus']); 
+
+    Route::get('dashboard',[DashboardController::class,'dashboard']); 
     
 });

@@ -298,7 +298,7 @@
       </div>
     </div>
   </footer><!-- End Footer -->
-
+  <link-auth></link-auth>
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 </div>
     
@@ -306,9 +306,12 @@
 
 <script>
 import FlashMessage from './FlashMessage.vue';
+import LinkAuth from './LinkNotAuth';
+
 export default {
   components:{
         flashmessage: FlashMessage,
+        linkAuth:LinkAuth
   },
   data() {
     return {
@@ -346,9 +349,9 @@ export default {
           this.userTray();
           this.listShippingAddr();
           this.userDefaultShip();
-          this.getSetting();
           this.getDeliveryFee();
       }
+       this.getSetting();
 
       if(window.Laravel.isLoggedin){
           let user = window.Laravel.user;
@@ -516,6 +519,9 @@ export default {
     },
 
     methods: {
+       linkauth(){
+            $('.notauth').modal('show');
+      },
        flashMessage(data){
              this.showMessage(data)
         },
@@ -561,6 +567,10 @@ export default {
             });
         },
         showTrayModal(){
+           if(!window.Laravel.isLoggedin){
+                this.linkauth();
+                return;
+            }
           this.userTray();
           $('.tray').modal('show');
         },

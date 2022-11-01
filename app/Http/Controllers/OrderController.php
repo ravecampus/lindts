@@ -248,7 +248,7 @@ class OrderController extends Controller
                 ->orWhere('full_name', 'like', '%'.$searchValue.'%');
             });
         }
-        $projects = $query->paginate($length);
+        $projects = $query->get();
         return ['data'=>$projects, 'draw'=> $request->draw];
     }
 
@@ -275,7 +275,7 @@ class OrderController extends Controller
                 ->orWhere('full_name', 'like', '%'.$searchValue.'%');
             });
         }
-        $projects = $query->paginate($length);
+        $projects = $query->get();
         return ['data'=>$projects, 'draw'=> $request->draw];
     }
     

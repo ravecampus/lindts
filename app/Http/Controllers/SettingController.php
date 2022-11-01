@@ -10,7 +10,7 @@ class SettingController extends Controller
     public function postSetting(Request $request){
 
         $request->validate([
-            'mobile_number' => 'regex:/(09)[0-9]{9}/',
+            'mobile_number' => 'required|regex:/(09)[0-9]{9}/',
         ]);
         $delivery = Setting::find(1);
         $delivery->mobile_number = $request->mobile_number;

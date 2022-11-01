@@ -34,7 +34,7 @@
                                         <input type="checkbox" name="remember">Remember Me
                                     </label>
                                     <label>
-                                        <a href="#">Forgotten Password?</a>
+                                        <!-- <a href="#">Forgotten Password?</a> -->
                                     </label>
                                 </div>
                                 <button  type="button" class="btn btn-warning btn-block text-white"  @click="signin()" :disabled="btn_dis">{{ btn_txt}}</button>

@@ -172,19 +172,20 @@ const openRoutes = [
     'home',
     'dashboard',
     'menu',
-    'payment',
-    'paymentsuccess',
-    'slip',
-    'myorder',
-    'myprofile',
     'reservation',
-    'payreserve',
-    'payreservesuccess'
+    
    
 ];
 
 const userRoutes = [
     'home',
+    'payment',
+    'paymentsuccess',
+    'slip',
+    'myorder',
+    'myprofile',
+    'payreserve',
+    'payreservesuccess'
    
 ];
 const adminRoutes = [

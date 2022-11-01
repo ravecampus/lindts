@@ -112,7 +112,7 @@
             </div>
         </div>
     </div>
-    
+    <link-auth></link-auth>
     </main>
 </template>
 
@@ -152,6 +152,9 @@ export default {
     },
 
     methods:{
+         linkauth(){
+            $('.notauth').modal('show');
+         },
          listCategory(){
             this.$axios.get('sanctum/csrf-cookie').then(response=>{
                 this.$axios.get('api/list-category').then(res=>{
@@ -172,6 +175,10 @@ export default {
         },
 
         orderMenu(data){
+            if(!window.Laravel.isLoggedin){
+                this.linkauth();
+                return;
+            }
             this.post = data;
             let tt = data.price * this.menu.qty;
             this.menu.total = tt;
@@ -203,6 +210,7 @@ export default {
             return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         },
         AddToTray(){
+            
             let data = this.post;
 
             if(this.trays.length > 0){
