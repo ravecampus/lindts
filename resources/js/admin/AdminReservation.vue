@@ -9,7 +9,7 @@
                     <div class="table-data__tool">
                         <div class="table-data__tool-left">
                             <div class="rs-select2--light rs-select2--lg">
-                                   <input class="au-input au-input--full w-100" type="text" v-model="tableData.search"  placeholder="Reservation # ..." @input="listOfOrder()">
+                                   <input class="au-input au-input--full w-100" type="text" v-model="tableData.search"  placeholder="Reservation # ..." @input="listOfReserve()">
                             </div>
                           
                             <button class="au-btn-filter mr-1" type="button" @click="filterOrder(1)">

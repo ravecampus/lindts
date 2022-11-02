@@ -25762,7 +25762,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }),
     placeholder: "Reservation # ...",
     onInput: _cache[1] || (_cache[1] = function ($event) {
-      return _ctx.listOfOrder();
+      return $options.listOfReserve();
     })
   }, null, 544
   /* HYDRATE_EVENTS, NEED_PATCH */
@@ -27560,7 +27560,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }),
     placeholder: "Search ...",
     onInput: _cache[1] || (_cache[1] = function ($event) {
-      return _ctx.listProduct();
+      return $options.listOfProduct();
     })
   }, null, 544
   /* HYDRATE_EVENTS, NEED_PATCH */
