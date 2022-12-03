@@ -15,7 +15,7 @@
                     </div>
                     <!-- Paypal info -->
                     <div id="paypal" class="pt-3" v-if="reserve.id != undefined" >
-                        <h6 class="pb-2">Order #: {{ reserve.reserve_number}}</h6>
+                        <h6 class="pb-2">Reservation #: {{ reserve.reservation_number}}</h6>
                         <div class="form-group "> 
                              <label class="radio-inline">
                                  Name / MObile # : <strong>{{ reserve.full_name }} / {{ reserve.mobile_number}} </strong>
