@@ -49,7 +49,7 @@
                                 </td>
                                 <td >
                                     <div class="badge badge-primary text-white">{{  list.order_items.length }} item/s</div>
-                                    <li class="card card-body p-1 m-1" v-for="(ls, idx)  in list.order_items" :key="idx">
+                                    <li class="card card-body p-1 m-1 shadow-sm" v-for="(ls, idx)  in list.order_items" :key="idx">
                                         {{ ls.name }}...{{ formatAmount(ls.price) }} x {{ ls.quantity }}
                                     </li>
                                     <div class="mt-3">

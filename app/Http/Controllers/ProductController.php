@@ -131,7 +131,9 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $prod = Product::find($id);
+        $prod->delete();
+        return response()->json($prod, 200);
     }
 
     public function productUpload(Request $request){

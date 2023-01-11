@@ -13,7 +13,7 @@ class ShippingAddress extends Model
         'user_id', 
         'full_name', 
         'address', 
-        'mobile_number',
+        // 'mobile_number',
         'default'
     ];
 }

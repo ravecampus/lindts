@@ -140,7 +140,7 @@
                                     <div class="text-uppercase">
                                         <strong>{{ user_d_addr.full_name }}</strong>
                                         <p class="p-0 m-0">{{ user_d_addr.address }}</p>
-                                        <p class="small p-0">({{ user_d_addr.mobile_number }})</p>
+                                        <!-- <p class="small p-0">({{ user_d_addr.mobile_number }})</p> -->
                                     </div>
                                     <div>
                                       <div class="btn-group">
@@ -156,10 +156,10 @@
                                     <span class="errors-material" >{{errors_p.delivery_address[0]}}</span>
 
                                   </li>
-                                  <li  v-if="errors_p.mobile_number">
+                                  <!-- <li  v-if="errors_p.mobile_number">
                                     <span class="errors-material">{{errors_p.mobile_number[0]}}</span>
 
-                                  </li>
+                                  </li> -->
                                   <p v-if="!showshipad"> Please bring order slip to the Store!</p>
                                   <hr class="my-4">
                                   <div class="d-flex justify-content-between mb-5">
@@ -202,11 +202,11 @@
                                 <input class="au-input au-input--full"  type="text" v-model="post.address" placeholder="Address">
                                 <span class="errors-material" v-if="errors_.full_name">{{errors_.address[0]}}</span>
                             </div>
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label>Mobile Number</label>
                                 <input class="au-input au-input--full"  type="text" v-model="post.mobile_number" placeholder="Mobile number">
                                 <span class="errors-material" v-if="errors_.mobile_number">{{errors_.mobile_number[0]}}</span>
-                            </div>
+                            </div> -->
                            
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                               <li v-for="(shps, idx) in shipaddrs" :key="idx" class="list-group-item d-flex justify-content-between">
                                 <div>{{ shps.full_name }}</div>
                                 <div>{{ shps.address }}</div>
-                                <div>{{ shps.mobile_number }}</div>
+                                <!-- <div>{{ shps.mobile_number }}</div> -->
                                 <div>
                                   <label class="switch switch-3d switch-primary mr-3" size="sm">
                                     <input type="checkbox" class="switch-input" :checked="chkShip(shps)" @change="changeDefault(shps)">

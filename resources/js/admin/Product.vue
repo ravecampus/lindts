@@ -71,9 +71,9 @@
                                         <button class="item" data-toggle="tooltip" data-placement="top"  @click="editProductModal(list)" title="Edit">
                                             <i class="zmdi zmdi-edit"></i>
                                         </button>
-                                        <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                        <button class="item" data-toggle="tooltip" data-placement="top" @click="showDelete(list)" title="Delete">
                                             <i class="zmdi zmdi-delete"></i>
-                                        </button> -->
+                                        </button>
                                         <!-- <button class="item" data-toggle="tooltip" data-placement="top" title="More">
                                             <i class="zmdi zmdi-more"></i>
                                         </button> -->
@@ -180,6 +180,31 @@
             </div>
         </div>
     </div>
+
+    
+     <div class="modal fade delete-product"  tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                   <h4>Delete</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            Do you want delete <strong>{{ deldata.name }}</strong> ? It will delete permantly!
+                        </div>
+                       
+                    </div>
+                </div>
+                <div class="modal-footer text-center">
+                    <button type="button" class="btn btn-danger mt-3" @click="confirmDelete()">Yes</button>
+                    <button type="button" data-dismiss="modal" @click="closeModal()" class="btn btn-secondary mt-3">No</button>
+                </div>
+                
+            </div>
+        </div>
+     </div>
+
 </div>
 </template>
 
@@ -210,6 +235,7 @@ export default {
             sortOrders[column.name] = -1;
         });
         return {
+            deldata:{},
             products:[],
             categories:[],
             post:{},
@@ -243,6 +269,14 @@ export default {
         }
     },
     methods: {
+        closeModal(){
+            this.deldata = {};
+            $('.delete-product').modal('hide');
+        },
+        showDelete(data){
+            this.deldata = data;
+            $('.delete-product').modal('show');
+        },
         showProductModal(){
             $('#product').modal('show');
         },
@@ -368,6 +402,16 @@ export default {
             });
            
         },
+        confirmDelete(){
+            this.$axios.get('sanctum/csrf-cookie').then(response=>{
+                this.$axios.delete('api/product/'+this.deldata.id).then(res=>{
+                        this.$emit('show',{'message':'Product has been Deleted!', 'status':4});
+                        this.deldata = {};
+                        $('.delete-product').modal('hide');
+                        this.listOfProduct();
+                });
+            });
+        }
         
     },
     mounted() {

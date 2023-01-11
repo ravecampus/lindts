@@ -48,7 +48,7 @@
                                     <!-- <span>{{list.del_address.length }}</span> -->
                                     <li class="card card-body p-1" v-for="(lsi,idx) in list.del_address" :key="idx">
                                         <div class="small">{{ lsi.full_name  }}</div>
-                                        <div class="small">{{ lsi.mobile_number  }}</div>
+                                        <!-- <div class="small">{{ lsi.mobile_number  }}</div> -->
                                         <div class="small">{{ lsi.address  }}</div>
                                     </li>
                                 </td>

@@ -41,7 +41,7 @@ class ShippingAddressController extends Controller
         $request->validate([
             'full_name' => 'required|string',
             'address' => 'required|string',
-            'mobile_number' => 'required|regex:/(09)[0-9]{9}/',
+            // 'mobile_number' => 'required|regex:/(09)[0-9]{9}/',
         ]);
 
         $chk = ShippingAddress::where('user_id', Auth::id())->get();
@@ -49,7 +49,7 @@ class ShippingAddressController extends Controller
             $ship = ShippingAddress::create([
                 'full_name' =>$request->full_name,
                 'address' =>$request->address,
-                'mobile_number' =>$request->mobile_number,
+                // 'mobile_number' =>$request->mobile_number,
                 'user_id' =>Auth::id(),
                 'default' => 1,
             ]);
@@ -57,7 +57,7 @@ class ShippingAddressController extends Controller
             $ship = ShippingAddress::create([
                 'full_name' =>$request->full_name,
                 'address' =>$request->address,
-                'mobile_number' =>$request->mobile_number,
+                // 'mobile_number' =>$request->mobile_number,
                 'user_id' =>Auth::id(),
                 'default' => 0,
             ]);
@@ -101,12 +101,12 @@ class ShippingAddressController extends Controller
         $request->validate([
             'full_name' => 'required|string',
             'address' => 'required|string',
-            'mobile_number' => 'required|regex:/(09)[0-9]{9}/',
+            // 'mobile_number' => 'required|regex:/(09)[0-9]{9}/',
         ]);
         $ship = ShippingAddress::find($id);
         $ship->full_name = $request->full_name;
         $ship->address = $request->address;
-        $ship->mobile_number = $request->mobile_number;
+        // $ship->mobile_number = $request->mobile_number;
         $ship->save();
 
         return response()->json($ship, 200);
