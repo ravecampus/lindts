@@ -115,7 +115,7 @@ export default {
         let columns =[
         {label:'Order #', name:'order_number'},
         {label:'Order Date', name:'created_at'},
-        {label:'Client', name:null},
+        {label:'Customers', name:null},
         // {label:'Payment Mode', name:null},
         {label:'Amount', name:null},
         {label:'Status', name:null},

@@ -142,7 +142,7 @@ export const routes = [
                 component: AdminUser 
             },
             {
-                path:'/clients',
+                path:'/customers',
                 name:'adminclient',
                 component: AdminClient 
             },

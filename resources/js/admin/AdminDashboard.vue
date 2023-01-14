@@ -12,7 +12,7 @@
                             <div class="col-md-6 col-lg-3" v-if="obj.user != undefined">
                                 <div class="statistic__item">
                                     <h2 class="number">{{ formatAmount(obj.user) }}</h2>
-                                    <span class="desc">clients</span>
+                                    <span class="desc">Customers</span>
                                     <div class="icon">
                                         <i class="zmdi zmdi-account-o"></i>
                                     </div>

@@ -48,7 +48,7 @@
 
                         <li>
                             <router-link :to="{name:'adminclient'}">
-                                <i class="fas fa-users"></i>Clients</router-link>
+                                <i class="fas fa-users"></i>Customers</router-link>
                         </li>
                         <li>
                             <router-link :to="{name:'adminreport'}">
@@ -98,7 +98,7 @@
                         </li>
                         <li>
                             <router-link :to="{name:'adminclient'}">
-                                <i class="fas fa-users"></i>Clients</router-link>
+                                <i class="fas fa-users"></i>Customers</router-link>
                         </li>
 
                         <li class="has-sub">

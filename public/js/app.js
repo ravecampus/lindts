@@ -21446,7 +21446,7 @@ __webpack_require__.r(__webpack_exports__);
       label: 'Order Date',
       name: 'created_at'
     }, {
-      label: 'Client',
+      label: 'Customers',
       name: null
     }, // {label:'Payment Mode', name:null},
     {
@@ -21690,7 +21690,7 @@ __webpack_require__.r(__webpack_exports__);
       label: 'Order Date',
       name: 'created_at'
     }, {
-      label: 'Client',
+      label: 'Customers',
       name: null
     }, // {label:'Payment Mode', name:null},
     {
@@ -24144,7 +24144,7 @@ var _hoisted_5 = {
 
 var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
   "class": "title-5 m-b-35"
-}, "Clients", -1
+}, "Customers", -1
 /* HOISTED */
 );
 
@@ -24651,7 +24651,7 @@ var _hoisted_11 = {
 
 var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
   "class": "desc"
-}, "clients", -1
+}, "Customers", -1
 /* HOISTED */
 );
 
@@ -27116,7 +27116,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Clients")];
+      return [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Customers")];
     }),
     _: 1
     /* STABLE */
@@ -27209,7 +27209,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [_hoisted_34, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Clients")];
+      return [_hoisted_34, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Customers")];
     }),
     _: 1
     /* STABLE */
@@ -32670,7 +32670,7 @@ var routes = [{
     name: 'adminuser',
     component: _admin_AdminUser__WEBPACK_IMPORTED_MODULE_21__["default"]
   }, {
-    path: '/clients',
+    path: '/customers',
     name: 'adminclient',
     component: _admin_AdminClient__WEBPACK_IMPORTED_MODULE_22__["default"]
   }, {
