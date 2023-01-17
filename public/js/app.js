@@ -22751,6 +22751,10 @@ __webpack_require__.r(__webpack_exports__);
       var tt = this.post.price * this.menu.qty;
       this.menu.total = tt;
     },
+    textQty: function textQty() {
+      var tt = this.post.price * this.menu.qty;
+      this.menu.total = tt;
+    },
     formatAmount: function formatAmount(num) {
       var val = (num / 1).toFixed(2).replace(',', '.');
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -29740,22 +29744,24 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, _hoisted_43)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
-    readonly: "",
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+    onInput: _cache[5] || (_cache[5] = function ($event) {
+      return $options.textQty();
+    }),
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return $data.menu.qty = $event;
     }),
     placeholder: "Qty",
-    "class": "form-control form-control-sm"
-  }, null, 512
-  /* NEED_PATCH */
+    "class": "form-control form-control-sm txt-qty"
+  }, null, 544
+  /* HYDRATE_EVENTS, NEED_PATCH */
   ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.menu.qty]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-secondary btn-sm",
-    onClick: _cache[6] || (_cache[6] = function ($event) {
+    onClick: _cache[7] || (_cache[7] = function ($event) {
       return $options.addQty($data.menu);
     })
   }, _hoisted_46)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
-    onClick: _cache[7] || (_cache[7] = function ($event) {
+    onClick: _cache[8] || (_cache[8] = function ($event) {
       return $options.AddToTray();
     }),
     disabled: $data.btndis,

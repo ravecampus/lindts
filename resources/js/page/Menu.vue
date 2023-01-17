@@ -96,7 +96,7 @@
                                         <i class="fa fa-minus"></i>
                                     </button>
                                 </div>
-                                <input type="number" readonly v-model="menu.qty"  placeholder="Qty" class="form-control form-control-sm">
+                                <input type="number" @input="textQty()" v-model="menu.qty"  placeholder="Qty" class="form-control form-control-sm txt-qty">
                                 <div class="input-group-btn">
                                     <button class="btn btn-secondary btn-sm" @click="addQty(menu)">
                                         <i class="fa fa-plus"></i>
@@ -202,6 +202,10 @@ export default {
             ret = num.qty + 1;
             this.menu.qty = ret;
 
+            let tt = this.post.price * this.menu.qty;
+            this.menu.total = tt;
+        },
+        textQty(){
             let tt = this.post.price * this.menu.qty;
             this.menu.total = tt;
         },
